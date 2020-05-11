@@ -1,0 +1,2 @@
+FLASK_APP=husky
+FLASK_ENV=development
