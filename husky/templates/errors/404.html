@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <p>404</p>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}404 Error{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>404 Error</h1>
+    </div>
+    <div class="row">
+        <div class="col-sm-8">
+            <p>Page Not Found</p>
+        </div>
+    </div>
+{% endblock %}

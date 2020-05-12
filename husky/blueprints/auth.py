@@ -11,19 +11,16 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('blog.index'))
-
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
         remember = form.remember.data
 
-        user = User.query.filter(User.username == username)
+        user = User.query.filter_by(username=username).first()
         if user and user.validate_password(password):
             login_user(user, remember)
-            flash('Welcome!', 'info')
+            flash('Welcome to flask, %s!' % user.username, 'info')
             return redirect(url_for('blog.index'))
         else:
             flash('Invalid username or password.', 'warning')
@@ -32,14 +29,18 @@ def login():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        flash('Please logout first.', 'warning')
+        return redirect(url_for('blog.index'))
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
 
-        user = User.query.filter(User.username == username)
+        user = User.query.filter_by(username=username).first()
         if not user:
-            new_user = User(username=username, password=password)
+            new_user = User(username=username, password_hash=password)
+            new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
             return redirect(url_for('auth.login'))

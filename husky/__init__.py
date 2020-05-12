@@ -24,8 +24,8 @@ def create_app(config_name=None):
     register_shell_context(app)
 
     @app.route('/')
-    def base_test():
-        return 'base test'
+    def home():
+        return render_template('base.html')
 
     return app
 
@@ -85,14 +85,18 @@ def register_commands(app):
 
     @app.cli.command()
     @click.option('--post', default=50, help='Quantity of posts, default is 50')
-    def forge(post):
+    @click.option('--user', default=10, help='Quantity of users, default is 10')
+    def forge(post, user):
         """Generate fake data."""
         from husky.fakes import fake_posts
+        from husky.fakes import fake_users
 
         db.drop_all()
         db.create_all()
 
         click.echo('Generating %d posts...' % post)
         fake_posts(post)
+        click.echo('Generating %d users...' % user)
+        fake_users(user)
 
         click.echo('Done.')
