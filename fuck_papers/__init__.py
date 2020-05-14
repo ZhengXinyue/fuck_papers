@@ -4,17 +4,17 @@ import click
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFError
 
-from husky.extensions import bootstrap, db, login_manager, csrf, ckeditor, mail, moment, toolbar, migrate
-from husky.settings import config
-from husky.blueprints.auth import auth_bp
-from husky.blueprints.blog import blog_bp
-from husky.models import User, Post
+from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, mail, moment, toolbar, migrate
+from fuck_papers.settings import config
+from fuck_papers.blueprints.auth import auth_bp
+from fuck_papers.blueprints.blog import blog_bp
+from fuck_papers.models import User, Post
 
 
 def create_app(config_name=None):
     if config_name is None:
         config_name = os.getenv('FLASK_CONFIG', 'development')
-    app = Flask('husky')
+    app = Flask('fuck_papers')
     app.config.from_object(config[config_name])
 
     register_extensions(app)
@@ -88,8 +88,8 @@ def register_commands(app):
     @click.option('--user', default=10, help='Quantity of users, default is 10')
     def forge(post, user):
         """Generate fake data."""
-        from husky.fakes import fake_posts
-        from husky.fakes import fake_users
+        from fuck_papers.fakes import fake_posts
+        from fuck_papers.fakes import fake_users
 
         db.drop_all()
         db.create_all()

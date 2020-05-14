@@ -3,7 +3,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
-from husky.extensions import db
+from fuck_papers.extensions import db
 
 
 class Post(db.Model):

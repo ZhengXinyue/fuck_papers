@@ -1,8 +1,8 @@
 from faker import Faker
 from sqlalchemy.exc import IntegrityError
 
-from husky.extensions import db
-from husky.models import Post, User
+from fuck_papers.extensions import db
+from fuck_papers.models import Post, User
 
 
 fake = Faker()

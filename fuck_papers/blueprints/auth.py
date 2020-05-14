@@ -1,10 +1,10 @@
 from flask import render_template, flash, redirect, url_for, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
 
-from husky.forms import LoginForm, RegisterForm
-from husky.models import User
-from husky.utils import redirect_back
-from husky.extensions import db
+from fuck_papers.forms import LoginForm, RegisterForm
+from fuck_papers.models import User
+from fuck_papers.utils import redirect_back
+from fuck_papers.extensions import db
 
 auth_bp = Blueprint('auth', __name__)
 

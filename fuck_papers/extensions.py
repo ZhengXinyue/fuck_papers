@@ -21,7 +21,7 @@ migrate = Migrate()
 
 @login_manager.user_loader
 def load_user(user_id):
-    from husky.models import User
+    from fuck_papers.models import User
     user = User.query.get(int(user_id))
     return user
 

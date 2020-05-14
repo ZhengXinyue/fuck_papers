@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, url_for, Blueprint, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 
-from husky.forms import PostForm
-from husky.models import Post
-from husky.extensions import db
+from fuck_papers.forms import PostForm
+from fuck_papers.models import Post
+from fuck_papers.extensions import db
 
 blog_bp = Blueprint('blog', __name__)
 
