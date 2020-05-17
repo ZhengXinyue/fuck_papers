@@ -21,7 +21,7 @@ def login():
         if user and user.validate_password(password):
             login_user(user, remember)
             flash('Welcome to flask, %s!' % user.username, 'info')
-            return redirect(url_for('blog.index'))
+            return redirect(url_for('content.index'))
         else:
             flash('Invalid username or password.', 'warning')
     return render_template('auth/login.html', form=form)
@@ -31,7 +31,7 @@ def login():
 def register():
     if current_user.is_authenticated:
         flash('Please logout first.', 'warning')
-        return redirect(url_for('blog.index'))
+        return redirect(url_for('content.index'))
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data

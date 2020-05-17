@@ -7,10 +7,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>{% block title %}Home{% endblock title %}</title>
         <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        <link rel="stylesheet"
-              href="{{ url_for('static', filename='css/%s.min.css' % request.cookies.get('theme', 'perfect_blue')) }}"
-              type="text/css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">
+        {% block styles %}
+            {% assets "css_all" %}
+                <link rel="stylesheet" href="{{ ASSET_URL }}">
+            {% endassets %}
+        {% endblock %}
+<!--        <link rel="stylesheet"-->
+<!--              href="{{ url_for('static', filename='css/%s.min.css' % request.cookies.get('theme', 'perfect_blue')) }}"-->
+<!--              type="text/css">-->
+<!--        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">-->
     {% endblock head %}
 </head>
 <body>
@@ -19,8 +24,6 @@
         <div class="container">
                 <ul class="navbar-nav">
                     {{ render_nav_item('home', 'Home') }}
-                    {{ render_nav_item('blog.index', 'Blog') }}
-                    {{ render_nav_item('blog.write', 'Write') }}
                 </ul>
                 <ul class="navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}
@@ -56,11 +59,14 @@
 </main>
 
 {% block scripts %}
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
-    {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
+    {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>-->
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>-->
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>-->
+<!--    {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}-->
 {% endblock %}
 </body>
 </html>

@@ -4,11 +4,14 @@ import click
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFError
 
-from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, mail, moment, toolbar, migrate
+from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, migrate, cache, assets
 from fuck_papers.settings import config
 from fuck_papers.blueprints.auth import auth_bp
-from fuck_papers.blueprints.blog import blog_bp
-from fuck_papers.models import User, Post
+from fuck_papers.blueprints.paper import paper_bp
+from fuck_papers.blueprints.auth import auth_bp
+from fuck_papers.blueprints.manage import manage_bp
+
+from fuck_papers.models import User
 
 
 def create_app(config_name=None):
@@ -36,21 +39,23 @@ def register_extensions(app):
     login_manager.init_app(app)
     csrf.init_app(app)
     ckeditor.init_app(app)
-    mail.init_app(app)
     moment.init_app(app)
     toolbar.init_app(app)
     migrate.init_app(app, db)
+    cache.init_app(app)
+    assets.init_app(app)
 
 
 def register_blueprints(app):
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(blog_bp, url_prefix='/blog')
+    app.register_blueprint(manage_bp, url_prefix='/manage')
+    app.register_blueprint(paper_bp)
 
 
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_processor():
-        return dict(db=db, User=User, Post=Post)
+        return dict(db=db, User=User)
 
 
 def register_errors(app):
@@ -88,15 +93,8 @@ def register_commands(app):
     @click.option('--user', default=10, help='Quantity of users, default is 10')
     def forge(post, user):
         """Generate fake data."""
-        from fuck_papers.fakes import fake_posts
-        from fuck_papers.fakes import fake_users
 
         db.drop_all()
         db.create_all()
-
-        click.echo('Generating %d posts...' % post)
-        fake_posts(post)
-        click.echo('Generating %d users...' % user)
-        fake_users(user)
 
         click.echo('Done.')

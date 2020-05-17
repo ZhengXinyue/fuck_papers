@@ -1,8 +1,4 @@
-## 学习flask的一些代码和数据
-   对《Flask Web开发实现》第8章 “个人博客” 的简单复现以及扩展。
-   运行方法参考https://github.com/greyli/bluelog
-   
-   计划做出一个在线文献管理工具fuck papers.
-   
-   
-
+## 利用flask搭建的一个在线文献管理工具 Fuck Papers
+用户输入url，网站进行解析收录。
+先尝试支持https://arxiv.org/ ，例如https://arxiv.org/abs/2005.06800
+提供多种文献操作（分类，收藏，评论，已读，搜索）
