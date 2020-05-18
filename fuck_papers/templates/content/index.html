@@ -1,13 +1,31 @@
 {% extends 'base.html' %}
-{% from 'bootstrap/pagination.html' import render_pager %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
+
+{% block title %}
+    {% if curr_category %}
+        {{ curr_category.name }}-Fuck Papers
+    {% else %}
+        所有-Fuck Papers
+    {% endif %}
+{% endblock title %}
 
 {% block content %}
+    <div class="page-header">
+        {% if curr_category %}
+            <h1 class="display-4 text-muted">{{ curr_category.name }}</h1>
+        {% else %}
+            <h1 class="display-4 text-muted">所有</h1>
+        {% endif %}
+        <h5 class="text-muted">&nbsp;该分类下共{{ total }}篇论文</h5>
+    </div>
     <div class="row">
         <div class="col-sm-8">
             {% include 'content/_papers.html' %}
-            {% if posts %}
-                <div class="page-footer">{{ render_pager(pagination) }}</div>
+            {% if papers %}
+                <div class="page-footer">
+                    {{ render_pagination(pagination) }}
+                </div>
             {% endif %}
         </div>
         <div class="col-sm-4 sidebar">

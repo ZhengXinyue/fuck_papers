@@ -1,6 +1,29 @@
 {% if papers %}
     {% for paper in papers %}
-        <h3>{{ paper.title }}</h3>
-
+        <h3 class="text-primary"><a href="{{ url_for('paper.show_paper', paper_id=paper.id) }}">{{ paper.title }}</a></h3>
+        <p>
+            {{ paper.abstract|striptags|truncate }}
+            <small><a href="{{ url_for('paper.show_paper', paper_id=paper.id) }}">Read More</a></small>
+        </p>
+        <small>
+            <a href="{{ paper.url }}" target="_blank">原始URL</a>
+            <span class="float-right">{{ moment(paper.add_timestamp).format('LL') }}</span>
+        </small>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
     {% endfor %}
+
+
+
+
+
+
+
+
+
+{% else %}
+    <div class="tip">
+        <h5>该分类下没有论文</h5>
+    </div>
 {% endif %}

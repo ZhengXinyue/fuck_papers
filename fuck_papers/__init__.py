@@ -4,7 +4,7 @@ import click
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFError
 from flask_sqlalchemy import get_debug_queries
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, migrate, cache, assets
 from fuck_papers.settings import config
@@ -27,10 +27,6 @@ def create_app(config_name=None):
     register_errors(app)
     register_commands(app)
     register_shell_context(app)
-
-    @app.route('/')
-    def home():
-        return render_template('base.html')
 
     @app.route('/test')
     def test():
@@ -56,6 +52,18 @@ def register_blueprints(app):
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(manage_bp, url_prefix='/manage')
     app.register_blueprint(paper_bp)
+
+
+@paper_bp.before_request
+@login_required
+def login_protect():
+    pass
+
+
+@manage_bp.before_request
+@login_required
+def login_protect():
+    pass
 
 
 def register_shell_context(app):

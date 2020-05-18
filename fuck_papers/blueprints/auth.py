@@ -59,14 +59,18 @@ def register():
 
 
 def initialize_user(new_user):
-    recently_category = Category(name='最近阅读', user=new_user)
-    star_category = Category(name='收藏', user=new_user,)
-    read_category = Category(name='已读', user=new_user)
-    comment_category = Category(name='已评论', user=new_user)
-    db.session.add(star_category)
-    db.session.add(read_category)
-    db.session.add(comment_category)
-    db.session.add(recently_category)
+    all_ = Category(name='所有', user=new_user)
+    recently = Category(name='最近阅读', user=new_user)
+    star = Category(name='收藏', user=new_user,)
+    read = Category(name='已读', user=new_user)
+    comment = Category(name='已评论', user=new_user)
+    no_category = Category(name='未分类', user=new_user)
+    db.session.add(all_)
+    db.session.add(recently)
+    db.session.add(star)
+    db.session.add(read)
+    db.session.add(comment)
+    db.session.add(no_category)
     db.session.commit()
 
 
