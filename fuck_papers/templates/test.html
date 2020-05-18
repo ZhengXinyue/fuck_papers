@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/nav.html' import render_nav_item %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{% block title %}Home{% endblock title %}</title>
+        <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        {% block styles %}
+            {% assets "css_all" %}
+                <link rel="stylesheet" href="{{ ASSET_URL }}">
+            {% endassets %}
+        {% endblock %}
+<!--        <link rel="stylesheet"-->
+<!--              href="{{ url_for('static', filename='css/%s.min.css' % request.cookies.get('theme', 'perfect_blue')) }}"-->
+<!--              type="text/css">-->
+<!--        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">-->
+    {% endblock head %}
+</head>
+<body>
+{% block nav %}
+{% endblock nav %}
+
+
+
+
+
+    {% block content %}
+        <h1 class="text-center">This is a practice for flask.</h1>
+    {% endblock content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {% block footer %}
+        <footer>
+            <p class="float-left">
+                <small>&copy; 2020 <a href="https://github.com/ZhengXinyue/flask" title="Fork me on GitHub">GitHub</a></small>
+            </p>
+        </footer>
+    {% endblock %}
+</main>
+
+{% block scripts %}
+    {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>-->
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>-->
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
+<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>-->
+<!--    {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}-->
+{% endblock %}
+</body>
+</html>

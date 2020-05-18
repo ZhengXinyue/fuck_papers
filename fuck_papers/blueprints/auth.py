@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
 
 from fuck_papers.forms import LoginForm, RegisterForm
-from fuck_papers.models import User
+from fuck_papers.models import User, Category, Paper
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
 
@@ -11,6 +11,9 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('paper.index'))
+
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -20,38 +23,58 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and user.validate_password(password):
             login_user(user, remember)
-            flash('Welcome to flask, %s!' % user.username, 'info')
-            return redirect(url_for('content.index'))
+            flash('欢迎, %s!' % user.username, 'info')
+            return redirect(url_for('paper.index'))
         else:
-            flash('Invalid username or password.', 'warning')
+            flash('用户名或密码不正确', 'warning')
     return render_template('auth/login.html', form=form)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        flash('Please logout first.', 'warning')
-        return redirect(url_for('content.index'))
+        flash('请先登出用户', 'warning')
+        return redirect_back()
+
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
+        confirm_password = form.confirm_password.data
 
         user = User.query.filter_by(username=username).first()
-        if not user:
+        if not user and password == confirm_password:
             new_user = User(username=username, password_hash=password)
             new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
+            initialize_user(new_user)
+            flash('注册成功', 'info')
             return redirect(url_for('auth.login'))
-        else:
-            flash('User {} is already registered.'.format(username), 'info')
+        elif user:
+            flash('该用户名已被注册', 'warning')
+        elif password != confirm_password:
+            flash('密码不一致，请重新输入', 'warning')
     return render_template('auth/register.html', form=form)
+
+
+def initialize_user(new_user):
+    recently_category = Category(name='最近阅读', user=new_user)
+    star_category = Category(name='收藏', user=new_user,)
+    read_category = Category(name='已读', user=new_user)
+    comment_category = Category(name='已评论', user=new_user)
+    db.session.add(star_category)
+    db.session.add(read_category)
+    db.session.add(comment_category)
+    db.session.add(recently_category)
+    db.session.commit()
 
 
 @auth_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('Logout success.', 'info')
+    flash('登出成功', 'info')
     return redirect(url_for('auth.login'))
+
+

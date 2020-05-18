@@ -1,11 +1,10 @@
-{% from 'bootstrap/nav.html' import render_nav_item %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     {% block head %}
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{% block title %}Home{% endblock title %}</title>
+        <title>{% block title %}Fuck Papers{% endblock title %}</title>
         <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
         {% block styles %}
             {% assets "css_all" %}
@@ -22,17 +21,36 @@
 {% block nav %}
     <nav class="navbar navbar-expand-lg bg-primary navbar-dark">
         <div class="container">
-                <ul class="navbar-nav">
-                    {{ render_nav_item('home', 'Home') }}
+            <a class="navbar-brand" href="{{ url_for('paper.index') }}">Fuck Papers</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                    aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('paper.index') }}">主页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('paper.about') }}">关于</a>
+                    </li>
                 </ul>
-                <ul class="navbar-nav navbar-right">
-                    {% if current_user.is_authenticated %}
-                        {{ render_nav_item('auth.logout', 'Logout') }}
+
+                 <ul class="nav navbar-nav navbar-right">
+                     {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">登出</a>
+                        </li>
                     {% else %}
-                        {{ render_nav_item('auth.login', 'Login') }}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">登录</a>
+                        </li>
                     {% endif %}
-                    {{ render_nav_item('auth.register', 'Register') }}
-                </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register', next=request.full_path) }}">注册</a>
+                        </li>
+                 </ul>
+            </div>
         </div>
     </nav>
 {% endblock nav %}
@@ -52,7 +70,8 @@
     {% block footer %}
         <footer>
             <p class="float-left">
-                <small>&copy; 2020 <a href="https://github.com/ZhengXinyue/flask" title="Fork me on GitHub">GitHub</a></small>
+                &copy; 2020 <img src="{{ url_for('static', filename='github.svg') }}" width="18" height="18">
+                <a href="https://github.com/ZhengXinyue/Social-image-scoring-tool" title="Star me on GitHub" target="_blank">Star me on GitHub</a>
             </p>
         </footer>
     {% endblock %}

@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="card mb-3">
+    <div class="card-header">Papers</div>
+    <ul class="list-group list-group flush">
+        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('manage.new_paper') }}" target="_blank">新建论文</a>
+            <a href="{{ url_for('manage.new_paper') }}" target="_blank"><span class="badge badge-primary badge-pill">+</span></a>
+        </li>
+        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('manage.manage_paper') }}" target="_blank">管理论文</a>
+            <span class="badge badge-primary badge-pill">{{ total }}</span>
+        </li>
+    </ul>
+</div>
 
-</body>
-</html>
+{% if categories %}
+    <div class="card mb-3">
+        <div class="card-header">分类</div>
+        <ul class="list-group list-group-flush">
+            {% for category in categories %}
+                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('paper.by_category', category_id=category.id) }}">
+                        {{ category.name }}
+                    </a>
+                    <span class="badge badge-primary badge-pill"> {{ category.papers|length }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Change Theme
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {% for theme_name, display_name in config.FP_THEMES.items() %}
+            <a class="dropdown-item"
+               href="{{ url_for('manage.change_theme', theme_name=theme_name, next=request.full_path) }}">
+                {{ display_name }}</a>
+        {% endfor %}
+    </div>
+</div>

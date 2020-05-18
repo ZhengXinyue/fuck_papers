@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pager %}
 
-</body>
-</html>
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-8">
+            {% include 'content/_papers.html' %}
+            {% if posts %}
+                <div class="page-footer">{{ render_pager(pagination) }}</div>
+            {% endif %}
+        </div>
+        <div class="col-sm-4 sidebar">
+            {% include 'content/_sidebar.html' %}
+        </div>
+    </div>
+
+{% endblock %}

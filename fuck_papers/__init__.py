@@ -3,15 +3,17 @@ import os
 import click
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFError
+from flask_sqlalchemy import get_debug_queries
+from flask_login import current_user
 
 from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, migrate, cache, assets
 from fuck_papers.settings import config
 from fuck_papers.blueprints.auth import auth_bp
 from fuck_papers.blueprints.paper import paper_bp
-from fuck_papers.blueprints.auth import auth_bp
 from fuck_papers.blueprints.manage import manage_bp
+from fuck_papers.fakes import fake_users, fake_categories, fake_papers
 
-from fuck_papers.models import User
+from fuck_papers.models import User, Category, Paper
 
 
 def create_app(config_name=None):
@@ -29,6 +31,10 @@ def create_app(config_name=None):
     @app.route('/')
     def home():
         return render_template('base.html')
+
+    @app.route('/test')
+    def test():
+        return render_template('test.html')
 
     return app
 
@@ -55,7 +61,17 @@ def register_blueprints(app):
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_processor():
-        return dict(db=db, User=User)
+        return dict(db=db, User=User, Category=Category, Paper=Paper)
+
+
+# def register_template_context(app):
+#     @app.context_processor
+#     def make_template_context():
+#         if current_user.is_authenticated:
+#             categories = Category.query.filter_by(user=current_user)
+#         else:
+#             categories = None
+#         return dict(categories=categories)
 
 
 def register_errors(app):
@@ -89,12 +105,34 @@ def register_commands(app):
         click.echo('Initialized database.')
 
     @app.cli.command()
-    @click.option('--post', default=50, help='Quantity of posts, default is 50')
     @click.option('--user', default=10, help='Quantity of users, default is 10')
-    def forge(post, user):
+    @click.option('--category', default=50, help='Quantity of posts, default is 50')
+    @click.option('--paper', default=400, help='Quantity of papers, default is 400')
+    def forge(user, category, paper):
         """Generate fake data."""
 
         db.drop_all()
         db.create_all()
 
+        click.echo('Generating %d users' % user)
+        fake_users(user)
+
+        click.echo('Generating %d categories' % category)
+        fake_categories(category)
+
+        click.echo('Generating %d papers' % paper)
+        fake_papers(paper)
+
         click.echo('Done.')
+
+
+def register_request_handlers(app):
+    @app.after_request
+    def query_profiler(response):
+        for q in get_debug_queries():
+            if q.duration >= app.config['FP_SLOW_QUERY_THRESHOLD']:
+                app.logger.warning(
+                    'Slow query: Duration: %fs\n Context: %s\nQuery: %s\n '
+                    % (q.duration, q.context, q.statement)
+                )
+        return response

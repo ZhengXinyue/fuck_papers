@@ -26,17 +26,15 @@ class BaseConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
 
+    FP_SLOW_QUERY_THRESHOLD = 1
+
     CKEDITOR_ENABLE_CSRF = True
     CKEDITOR_FILE_UPLOADER = 'user.upload_image'
 
     FP_PAPER_PER_PAGE = 10
-    FP_MANAGE_POST_PER_PAGE = 15
+    FP_MANAGE_PAPER_PER_PAGE = 15
     # ('theme name', 'display name')
     FP_THEMES = {'perfect_blue': 'Perfect Blue', 'black_swan': 'Black Swan'}
-    FP_SLOW_QUERY_THRESHOLD = 1
-
-    FP_UPLOAD_PATH = os.path.join(basedir, 'uploads')
-    FP_ALLOWED_URL_EXTENSIONS = None
 
     CACHE_TYPE = 'simple'
 
