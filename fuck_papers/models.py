@@ -46,11 +46,13 @@ class Paper(db.Model):
     author = db.Column(db.String(300))
     abstract = db.Column(db.Text)
     subjects = db.Column(db.String(200))
+    submit_time = db.Column(db.String(20))
 
     add_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     last_read_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-    star = db.Column(db.Boolean, default=False)
-    comment = db.Column(db.String(300))
+    stared = db.Column(db.Boolean, default=False)
+    readed = db.Column(db.Boolean, default=False)
+    commented = db.Column(db.String(300))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))

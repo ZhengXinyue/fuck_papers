@@ -27,6 +27,8 @@ def create_app(config_name=None):
     register_errors(app)
     register_commands(app)
     register_shell_context(app)
+    register_template_context(app)
+    register_request_handlers(app)
 
     @app.route('/test')
     def test():
@@ -72,14 +74,23 @@ def register_shell_context(app):
         return dict(db=db, User=User, Category=Category, Paper=Paper)
 
 
-# def register_template_context(app):
-#     @app.context_processor
-#     def make_template_context():
-#         if current_user.is_authenticated:
-#             categories = Category.query.filter_by(user=current_user)
-#         else:
-#             categories = None
-#         return dict(categories=categories)
+def register_template_context(app):
+    @app.context_processor
+    def make_template_context():
+        if current_user.is_authenticated:
+            categories = Category.query.filter_by(user=current_user)
+            all_papers = Paper.query.filter_by(user=current_user).all()
+            stared_papers = Paper.query.filter_by(user=current_user).filter_by(stared=True).all()
+            readed_papers = Paper.query.filter_by(user=current_user).filter_by(readed=True).all()
+            commented_papers = Paper.query.filter_by(user=current_user).filter(Paper.commented.isnot(None)).all()
+        else:
+            categories = None
+            all_papers = None
+            stared_papers = None
+            readed_papers = None
+            commented_papers = None
+        return dict(categories=categories, all_papers=all_papers, stared_papers=stared_papers,
+                    readed_papers=readed_papers, commented_papers=commented_papers)
 
 
 def register_errors(app):

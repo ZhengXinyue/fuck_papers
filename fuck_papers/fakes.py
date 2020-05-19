@@ -11,7 +11,7 @@ from fuck_papers.models import User, Category, Paper
 fake = Faker()
 
 
-def fake_users(count=10):
+def fake_users(count=5):
     for i in range(count):
         user = User(
             username=fake.user_name(),
@@ -34,33 +34,12 @@ def fake_users(count=10):
 
 def fake_categories(count=50):
     user_count = User.query.count()
-    # 为每个用户添加基础分类
     for i in range(1, user_count + 1):
-        recently = Category(
-            name='最近阅读',
-            user=User.query.get(i)
-        )
-        star = Category(
-            name='收藏',
-            user=User.query.get(i),
-        )
-        read = Category(
-            name='已读',
-            user=User.query.get(i)
-        )
-        comment = Category(
-            name='已评论',
-            user=User.query.get(i)
-        )
-        no_category = Category(
+        default_category = Category(
             name='未分类',
             user=User.query.get(i)
         )
-        db.session.add(recently)
-        db.session.add(star)
-        db.session.add(read)
-        db.session.add(comment)
-        db.session.add(no_category)
+        db.session.add(default_category)
     db.session.commit()
 
     # 为每个用户添加个人分类
@@ -83,23 +62,40 @@ def fake_papers(count=400):
         author = fake.user_name()
         abstract = fake.text(1000)
         subjects = fake.word()
+        submit_time = fake.word()
+
         add_timestamp = fake.date_time_this_year()
         last_read_timestamp = fake.date_time_this_year()
-
+        if random.random() < 0.5:
+            stared = True
+        else:
+            stared = False
+        if random.random() < 0.5:
+            readed = True
+        else:
+            readed = False
+        if random.random() < 0.5:
+            commented = fake.sentence()
+        else:
+            commented = None
         user = User.query.get(random.randint(1, User.query.count()))
 
-        paper1 = Paper(
+        paper = Paper(
             url=url,
             title=title,
             author=author,
             abstract=abstract,
             subjects=subjects,
+            submit_time=submit_time,
 
             add_timestamp=add_timestamp,
             last_read_timestamp=last_read_timestamp,
+            stared=stared,
+            readed=readed,
+            commented=commented,
 
             user=user,
-            category=random.choice(user.categories[current_app.config['FP_DEFAULT_CATEGORIES']-1:]))
+            category=random.choice(user.categories))
 
-        db.session.add(paper1)
+        db.session.add(paper)
     db.session.commit()

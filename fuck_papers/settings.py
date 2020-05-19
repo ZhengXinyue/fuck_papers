@@ -31,7 +31,6 @@ class BaseConfig(object):
     CKEDITOR_ENABLE_CSRF = True
     CKEDITOR_FILE_UPLOADER = 'user.upload_image'
 
-    FP_DEFAULT_CATEGORIES = 5
     FP_PAPER_PER_PAGE = 10
     FP_MANAGE_PAPER_PER_PAGE = 15
     # ('theme name', 'display name')

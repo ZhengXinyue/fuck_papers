@@ -3,21 +3,15 @@
 
 
 {% block title %}
-    {% if curr_category %}
-        {{ curr_category.name }}-Fuck Papers
-    {% else %}
-        所有-Fuck Papers
-    {% endif %}
-{% endblock title %}
+    {{ category_name }}-Fuck Papers
+{% endblock %}
+
+
 
 {% block content %}
     <div class="page-header">
-        {% if curr_category %}
-            <h1 class="display-4 text-muted">{{ curr_category.name }}</h1>
-        {% else %}
-            <h1 class="display-4 text-muted">所有</h1>
-        {% endif %}
-        <h5 class="text-muted">&nbsp;该分类下共{{ total }}篇论文</h5>
+        <h1 class="display-4 text-muted">{{ category_name }}</h1>
+        <h4 class="text-muted">&nbsp;该分类下共{{ total }}篇论文</h4>
     </div>
     <div class="row">
         <div class="col-sm-8">

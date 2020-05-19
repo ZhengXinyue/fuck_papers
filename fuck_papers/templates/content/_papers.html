@@ -1,26 +1,49 @@
 {% if papers %}
     {% for paper in papers %}
-        <h3 class="text-primary"><a href="{{ url_for('paper.show_paper', paper_id=paper.id) }}">{{ paper.title }}</a></h3>
+        <h2 class="text-primary"><a href="{{ url_for('paper.show_paper', paper_id=paper.id) }}">{{ paper.title }}</a></h2>
+        <small><p class="text-muted">Submitted on {{ paper.submit_time }}
+            {% if paper.stared %}
+                ---已收藏
+            {% else %}
+                ---未收藏
+            {% endif %}
+            {% if paper.readed %}
+                ---已读
+            {% else %}
+                ---未读
+            {% endif %}
+            {% if paper.commented %}
+                ---已评论
+            {% else %}
+                ---未评论
+            {% endif %}
+        </small>
         <p>
             {{ paper.abstract|striptags|truncate }}
             <small><a href="{{ url_for('paper.show_paper', paper_id=paper.id) }}">Read More</a></small>
         </p>
+
+        <p>
+        {% if paper.commented %}
+            评论: {{ paper.comment }}
+         {% else %}
+            ddd
+        {% endif %}
+        </p>
         <small>
-            <a href="{{ paper.url }}" target="_blank">原始URL</a>
+            <a href="{{ url_for('paper.star', paper_id=paper.id, action=request.full_path) }}">
+                {% if paper.stared %}
+                    取消收藏
+                {% else %}
+                    收藏
+                {% endif %}
+            </a>
             <span class="float-right">{{ moment(paper.add_timestamp).format('LL') }}</span>
         </small>
         {% if not loop.last %}
             <hr>
         {% endif %}
     {% endfor %}
-
-
-
-
-
-
-
-
 
 {% else %}
     <div class="tip">

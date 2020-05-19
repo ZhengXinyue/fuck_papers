@@ -39,6 +39,12 @@ def manage_category():
     pass
 
 
+@manage_bp.route('/comment/<int:paper_id>')
+def add_comment(paper_id):
+    pass
+
+
+
 @manage_bp.route('/change_theme')
 def change_theme(theme):
     pass
