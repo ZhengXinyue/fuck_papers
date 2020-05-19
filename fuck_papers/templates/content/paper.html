@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}
+    {{ paper.title }}-Fuck Papers
+{% endblock %}
+
+
+{% block content %}
+    <div class="page-header">
+        <h1>{{ paper.title }}</h1>
+        <span class="float-right">
+            <a class="btn btn-primary btn-sm" href="{{ url_for('manage.edit_paper', paper_id=paper.id) }}">编辑</a>
+            <form class="inline" method="post"
+                  action="{{ url_for('manage.star_paper', paper_id=paper.id, next=request.full_path) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Are you sure?');">
+                    {% if paper.stared %}
+                        取消收藏
+                    {% else %}
+                        加入收藏
+                    {% endif %}
+                </button>
+            </form>
+            <form class="inline" method="post"
+                  action="{{ url_for('manage.read_paper', paper_id=paper.id, next=request.full_path) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Are you sure?');">
+                    {% if paper.readed %}
+                        从已读中删除
+                    {% else %}
+                        加入到已读
+                    {% endif %}
+                </button>
+            </form>
+            <form class="inline" method="post"
+                  action="{{ url_for('manage.delete_paper', paper_id=paper.id, next=url_for('paper.index')) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">删除论文
+                </button>
+            </form>
+        </span>
+        <h6>添加时间: {{ moment(paper.add_timestamp).format('lll') }}</h6>
+        <h6>分类: <a href="{{ url_for('paper.by_category', category_id=paper.category.id) }}">{{ paper.category.name }}</a></h6>
+        <hr>
+    </div>
+    <div class="row">
+        <div class="col-sm-8">
+            摘要: {{ paper.abstract|safe }}
+            <hr>
+            <h6>URL: <a href="{{ paper.url }}">{{ paper.url }}</a></h6>
+            <h6>作者: {{ paper.author }}</h6>
+            <h6>领域: {{ paper.subjects }}</h6>
+            <h6>提交时间: {{ paper.submit_time }}</h6>
+            <hr>
+            <h5>
+                {% if paper.commented %}
+                    <span class="text-muted">{{ paper.commented }} </span>
+                <small><a href="{{ url_for('manage.add_comment', paper_id=paper.id) }}">修改评注</a></small>
+                {% else %}
+                    <span class="text-muted">你还没有为该论文写评注。 </span>
+                <small><a href="{{ url_for('manage.add_comment', paper_id=paper.id) }}">添加评注</a></small>
+                {% endif %}
+            </h5>
+        </div>
+        <div class="col-sm-4">
+            {% include "content/_sidebar.html" %}
+        </div>
+    </div>
+{% endblock %}

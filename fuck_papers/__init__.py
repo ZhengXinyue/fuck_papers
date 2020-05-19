@@ -6,7 +6,7 @@ from flask_wtf.csrf import CSRFError
 from flask_sqlalchemy import get_debug_queries
 from flask_login import current_user, login_required
 
-from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, migrate, cache, assets
+from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, assets, migrate, cache, assets
 from fuck_papers.settings import config
 from fuck_papers.blueprints.auth import auth_bp
 from fuck_papers.blueprints.paper import paper_bp
@@ -30,9 +30,9 @@ def create_app(config_name=None):
     register_template_context(app)
     register_request_handlers(app)
 
-    @app.route('/test')
-    def test():
-        return render_template('test.html')
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
 
     return app
 

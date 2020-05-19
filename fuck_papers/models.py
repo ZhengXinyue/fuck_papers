@@ -46,7 +46,7 @@ class Paper(db.Model):
     author = db.Column(db.String(300))
     abstract = db.Column(db.Text)
     subjects = db.Column(db.String(200))
-    submit_time = db.Column(db.String(20))
+    submit_time = db.Column(db.String(40))
 
     add_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     last_read_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)

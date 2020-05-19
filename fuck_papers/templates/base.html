@@ -6,15 +6,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>{% block title %}Fuck Papers{% endblock title %}</title>
         <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        {% block styles %}
-            {% assets "css_all" %}
-                <link rel="stylesheet" href="{{ ASSET_URL }}">
-            {% endassets %}
-        {% endblock %}
-<!--        <link rel="stylesheet"-->
-<!--              href="{{ url_for('static', filename='css/%s.min.css' % request.cookies.get('theme', 'perfect_blue')) }}"-->
-<!--              type="text/css">-->
-<!--        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">-->
+<!--        {% block styles %}-->
+<!--            {% assets "css_all" %}-->
+<!--                <link rel="stylesheet" href="{{ ASSET_URL }}">-->
+<!--            {% endassets %}-->
+<!--        {% endblock %}-->
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='css/%s.min.css' % request.cookies.get('theme', 'perfect_blue')) }}"
+              type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">
     {% endblock head %}
 </head>
 <body>
@@ -32,7 +32,7 @@
                         <a class="nav-link" href="{{ url_for('paper.index') }}">主页</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('paper.about') }}">关于</a>
+                        <a class="nav-link" href="{{ url_for('about') }}">关于</a>
                     </li>
                 </ul>
 
@@ -78,14 +78,14 @@
 </main>
 
 {% block scripts %}
-    {% assets "js_all" %}
-        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-    {% endassets %}
-<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>-->
-<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>-->
-<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
-<!--    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>-->
-<!--    {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}-->
+<!--    {% assets "js_all" %}-->
+<!--        <script type="text/javascript" src="{{ ASSET_URL }}"></script>-->
+<!--    {% endassets %}-->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
 {% endblock %}
 </body>
 </html>

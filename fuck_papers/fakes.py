@@ -60,7 +60,7 @@ def fake_papers(count=400):
         url = fake.url()
         title = fake.word()
         author = fake.user_name()
-        abstract = fake.text(1000)
+        abstract = fake.text(2000)
         subjects = fake.word()
         submit_time = fake.word()
 

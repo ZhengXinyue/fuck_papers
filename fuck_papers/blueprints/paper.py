@@ -1,8 +1,9 @@
-from flask import render_template, flash, redirect, url_for, Blueprint, current_app
-from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy import and_
+from datetime import datetime
 
-from fuck_papers.forms import LoginForm, RegisterForm
+from flask import render_template, flash, redirect, url_for, Blueprint, current_app, abort, make_response
+from flask_login import login_user, logout_user, login_required, current_user
+
+from fuck_papers.forms import LoginForm, RegisterForm, CommentForm
 from fuck_papers.models import User, Paper, Category
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
@@ -13,7 +14,6 @@ paper_bp = Blueprint('paper', __name__)
 @paper_bp.route('/category/<int:category_id>', defaults={'page': 1})
 @paper_bp.route('/category/<int:category_id>/<int:page>')
 def by_category(category_id, page):
-    # 只能访问自己的分类
     categories = Category.query.filter_by(user=current_user)
     category = categories.filter_by(id=category_id).first_or_404()
 
@@ -26,6 +26,7 @@ def by_category(category_id, page):
                            category_name=category.name)
 
 
+@paper_bp.route('/', defaults={'page': 1})
 @paper_bp.route('/index', defaults={'page': 1})
 @paper_bp.route('/index/<int:page>', )
 def index(page):
@@ -86,15 +87,17 @@ def commented(page):
                            category_name='已评论')
 
 
-@paper_bp.route('/paper/<int:paper_id>')
+@paper_bp.route('/paper/<int:paper_id>', methods=['GET', 'POST'])
 def show_paper(paper_id):
-    return render_template('content/paper.html')
-
+    paper = Paper.query.filter_by(user=current_user).filter_by(id=paper_id).first_or_404()
+    paper.last_read_timestamp = datetime.utcnow()
+    db.session.commit()
+    return render_template('content/paper.html', paper=paper)
 
 
 @paper_bp.route('/star/<int:paper_id>', methods=['POST'])
 def star(paper_id):
-    paper = Paper.query.get_or_404(paper_id)
+    paper = Paper.query.filter_by(user=current_user).filter_by(id=paper_id).first_or_404()
     if paper.star is True:
         paper.star = False
         flash('取消收藏成功')
@@ -105,16 +108,13 @@ def star(paper_id):
     return redirect_back()
 
 
+@paper_bp.route('/change_theme<theme_name>')
+def change_theme(theme_name):
+    if theme_name not in current_app.config['FP_THEMES'].keys():
+        abort(404)
+
+    response = make_response(redirect_back())
+    response.set_cookie('theme', theme_name, max_age=30 * 24 * 60 * 60)
+    return response
 
 
-
-
-
-
-
-
-
-
-@paper_bp.route('/about')
-def about():
-    return render_template('content/about.html')

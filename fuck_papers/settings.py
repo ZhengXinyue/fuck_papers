@@ -29,7 +29,7 @@ class BaseConfig(object):
     FP_SLOW_QUERY_THRESHOLD = 1
 
     CKEDITOR_ENABLE_CSRF = True
-    CKEDITOR_FILE_UPLOADER = 'user.upload_image'
+    CKEDITOR_SERVE_LOCAL = True
 
     FP_PAPER_PER_PAGE = 10
     FP_MANAGE_PAPER_PER_PAGE = 15

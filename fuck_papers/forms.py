@@ -1,8 +1,11 @@
 from flask_ckeditor import CKEditorField
 from flask_wtf import FlaskForm
+from flask_login import current_user
 from wtforms import StringField, SubmitField, SelectField, TextAreaField, ValidationError, HiddenField, \
     BooleanField, PasswordField
 from wtforms.validators import DataRequired, Email, Length, Optional, URL, EqualTo
+
+from fuck_papers.models import Category
 
 
 class LoginForm(FlaskForm):
@@ -13,15 +16,32 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    username = StringField('用户名', validators=[DataRequired(), Length(1, 20, message='用户名长度必须在6-20之间')])
+    username = StringField('用户名', validators=[DataRequired(), Length(6, 20, message='用户名长度必须在6-20之间')])
     password = PasswordField('密码', validators=[DataRequired(), Length(6, 128, message='密码长度必须在6-128之间')])
     confirm_password = PasswordField('确认密码', validators=[DataRequired()])
     submit = SubmitField('注册')
 
 
-class Comment(FlaskForm):
-    comment = CKEditorField('评论', validators=[DataRequired(), Length(1, 300, message='请保持评论不超过300字')])
+class CommentForm(FlaskForm):
+    commented = StringField('评论', validators=[Length(0, 200, message='请保持评论不超过200字')])
     submit = SubmitField('提交')
+
+
+class EditPaperForm(FlaskForm):
+    url = StringField('url', [Length(0, 200, message='"url"过长')])
+    title = StringField('标题', [Length(0, 200, message='"标题"过长')])
+    author = StringField('作者', [Length(0, 300, message='"作者"过长')])
+    abstract = StringField('摘要', [Length(0, 2000, message='"摘要"过长')])
+    subjects = StringField('领域', [Length(0, 200, message='"领域"过长')])
+    submit_time = StringField('提交时间', [Length(0, 20, message='"提交时间"过长')])
+    category = SelectField('分类', coerce=int)
+
+    submit = SubmitField('提交')
+
+    def __init__(self, *args, **kwargs):
+        super(EditPaperForm, self).__init__(*args, **kwargs)
+        self.category.choices = [(category.id, category.name)
+                                 for category in Category.query.filter_by(user=current_user).all()]
 
 
 class UrlForm(FlaskForm):
