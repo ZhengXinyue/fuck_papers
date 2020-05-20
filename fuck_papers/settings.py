@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    :author: Grey Li (李辉)
-    :url: http://greyli.com
-    :copyright: © 2018 Grey Li <withlihui@gmail.com>
-    :license: MIT, see LICENSE for more details.
-"""
 import os
 import sys
 
@@ -28,16 +22,17 @@ class BaseConfig(object):
 
     FP_SLOW_QUERY_THRESHOLD = 1
 
-    CKEDITOR_ENABLE_CSRF = True
-    CKEDITOR_SERVE_LOCAL = True
-
     FP_PAPER_PER_PAGE = 10
     FP_MANAGE_PAPER_PER_PAGE = 15
     FP_MANAGE_CATEGORY_PER_PAGE = 15
     # ('theme name', 'display name')
     FP_THEMES = {'perfect_blue': 'Perfect Blue', 'black_swan': 'Black Swan'}
 
-    CACHE_TYPE = 'simple'
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_HOST = 'localhost'
+    CACHE_REDIS_PORT = '6379'
+    # CACHE_REDIS_PASSWORD = ''
+    CACHE_REDIS_DB = '0'
 
 
 class DevelopmentConfig(BaseConfig):
@@ -52,6 +47,12 @@ class TestingConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', prefix + os.path.join(basedir, 'data.db'))
+
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_HOST = 'localhost'
+    CACHE_REDIS_PORT = '6379'
+    # CACHE_REDIS_PASSWORD = ''
+    CACHE_REDIS_DB = '0'
 
 
 config = {

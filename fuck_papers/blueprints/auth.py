@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
 
 from fuck_papers.forms import LoginForm, RegisterForm
-from fuck_papers.models import User, Category, Paper
+from fuck_papers.models import User, Category
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
 
@@ -59,18 +59,8 @@ def register():
 
 
 def initialize_user(new_user):
-    all_ = Category(name='所有', user=new_user)
-    recently = Category(name='最近阅读', user=new_user)
-    star = Category(name='收藏', user=new_user,)
-    read = Category(name='已读', user=new_user)
-    comment = Category(name='已评论', user=new_user)
-    no_category = Category(name='未分类', user=new_user)
-    db.session.add(all_)
-    db.session.add(recently)
-    db.session.add(star)
-    db.session.add(read)
-    db.session.add(comment)
-    db.session.add(no_category)
+    default_category = Category(name='未分类', user=new_user)
+    db.session.add(default_category)
     db.session.commit()
 
 
@@ -80,5 +70,3 @@ def logout():
     logout_user()
     flash('登出成功', 'info')
     return redirect(url_for('auth.login'))
-
-

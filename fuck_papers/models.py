@@ -59,5 +59,3 @@ class Paper(db.Model):
 
     category = db.relationship('Category', back_populates='papers')
     user = db.relationship('User', back_populates='papers')
-
-

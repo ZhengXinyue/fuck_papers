@@ -1,5 +1,4 @@
 from flask_bootstrap import Bootstrap
-from flask_ckeditor import CKEditor
 from flask_login import LoginManager
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
@@ -8,18 +7,19 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_assets import Environment, Bundle
+from flask_mail import Mail
 
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 login_manager = LoginManager()
 csrf = CSRFProtect()
-ckeditor = CKEditor()
 moment = Moment()
 toolbar = DebugToolbarExtension()
 migrate = Migrate()
 cache = Cache()
 assets = Environment()
+mail = Mail()      # TODO: 实现邮箱注册登录
 
 
 @login_manager.user_loader
@@ -43,9 +43,9 @@ js = Bundle('js/bootstrap.bundle.js',
             'js/popper.min.js',
             filters='jsmin', output='gen/packed.js')
 
-css = Bundle('css/bootstrap.css',
+css = Bundle('css/black_swan.min.css',
+             'css/bootstrap.css',
              'css/bootstrap.min.css',
-             'css/black_swan.min.css',
              'css/bootstrap-grid.css',
              'css/bootstrap-grid.min.css',
              'css/bootstrap-reboot.css',

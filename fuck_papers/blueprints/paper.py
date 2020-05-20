@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from flask import render_template, flash, redirect, url_for, Blueprint, current_app, abort, make_response
-from flask_login import login_user, logout_user, login_required, current_user
+from flask import render_template, flash, Blueprint, current_app, abort, make_response
+from flask_login import current_user
 
-from fuck_papers.forms import LoginForm, RegisterForm, CommentForm
-from fuck_papers.models import User, Paper, Category
+from fuck_papers.models import Paper, Category
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
 
@@ -32,7 +31,6 @@ def index(page):
     pagination = Paper.query.filter_by(user=current_user).order_by(
         Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
-    total = pagination.total
     return render_template('content/index.html', pagination=pagination, papers=papers, category_name='所有')
 
 
@@ -73,7 +71,6 @@ def commented(page):
     pagination = Paper.query.filter_by(user=current_user).filter(Paper.commented != '').order_by(
         Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
-    total = pagination.total
     return render_template('content/index.html', pagination=pagination, papers=papers, category_name='已评论')
 
 
@@ -106,5 +103,3 @@ def change_theme(theme_name):
     response = make_response(redirect_back())
     response.set_cookie('theme', theme_name, max_age=30 * 24 * 60 * 60)
     return response
-
-

@@ -1,9 +1,8 @@
 from flask import render_template, flash, redirect, url_for, Blueprint, current_app
-from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy.exc import IntegrityError
+from flask_login import current_user
 
 from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm, NewCategoryForm, EditCategoryForm
-from fuck_papers.models import User, Paper, Category
+from fuck_papers.models import Paper, Category
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
 
@@ -15,7 +14,7 @@ def new_paper():
     form = UrlForm()
     if form.validate_on_submit():
         url = form.url.data
-        ############################
+        # TODO: 异步任务框架?
         flash('正在采集', 'success')
         return redirect_back()
     return render_template('manage/new_paper.html', form=form)

@@ -6,8 +6,7 @@ from flask_wtf.csrf import CSRFError
 from flask_sqlalchemy import get_debug_queries
 from flask_login import current_user, login_required
 
-from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, assets, migrate, \
-    cache, assets
+from fuck_papers.extensions import bootstrap, db, login_manager, csrf, moment, toolbar, assets, migrate, cache, mail
 from fuck_papers.settings import config
 from fuck_papers.blueprints.auth import auth_bp
 from fuck_papers.blueprints.paper import paper_bp
@@ -32,6 +31,7 @@ def create_app(config_name=None):
     register_request_handlers(app)
 
     @app.route('/about')
+    @cache.cached(timeout=60 * 60 * 24)
     def about():
         return render_template('about.html')
 
@@ -43,12 +43,12 @@ def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
-    ckeditor.init_app(app)
     moment.init_app(app)
-    toolbar.init_app(app)
-    migrate.init_app(app, db)
+    # toolbar.init_app(app)
+    # migrate.init_app(app, db)
     cache.init_app(app)
-    assets.init_app(app)
+    mail.init_app(app)
+    # assets.init_app(app)
 
 
 def register_blueprints(app):

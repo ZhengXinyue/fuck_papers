@@ -1,6 +1,5 @@
 import random
 
-from flask import current_app
 from faker import Faker
 from sqlalchemy.exc import IntegrityError
 
