@@ -10,7 +10,7 @@ from fuck_papers.models import User, Category, Paper
 fake = Faker()
 
 
-def fake_users(count=5):
+def fake_users(username, password, count=5):
     for i in range(count):
         user = User(
             username=fake.user_name(),
@@ -23,8 +23,8 @@ def fake_users(count=5):
         except IntegrityError:
             db.rollback()
     user = User(
-        username='zhengxinyue',
-        password_hash='123456'
+        username=username,
+        password_hash=password
     )
     user.set_password(user.password_hash)
     db.session.add(user)

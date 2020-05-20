@@ -1,4 +1,4 @@
-##利用flask搭建的一个在线文献管理工具网站——Fuck Papers
+## 利用flask搭建的一个在线文献管理工具网站——Fuck Papers
 ### （参考李辉的《Flask Web开发实战》）
 用户输入url，网站进行解析收录。
 先尝试支持https://arxiv.org/ ，例如https://arxiv.org/abs/2005.06800     
@@ -32,9 +32,18 @@ generate fake data then run:
 $ flask forge
 $ flask run
 * Running on http://127.0.0.1:5000/
+
+默认用户名: default_user        
+密码: 123456
+```
+
+or:
+```
+$ flask forge --username your_name --password your_password
+用户名: your_name
+密码: your_password
 ```
 
 ## License
-
 This project is licensed under the MIT License (see the
 [LICENSE](LICENSE) file for details).

@@ -28,11 +28,7 @@ class BaseConfig(object):
     # ('theme name', 'display name')
     FP_THEMES = {'perfect_blue': 'Perfect Blue', 'black_swan': 'Black Swan'}
 
-    CACHE_TYPE = 'redis'
-    CACHE_REDIS_HOST = 'localhost'
-    CACHE_REDIS_PORT = '6379'
-    # CACHE_REDIS_PASSWORD = ''
-    CACHE_REDIS_DB = '0'
+    CACHE_TYPE = 'simple'
 
 
 class DevelopmentConfig(BaseConfig):

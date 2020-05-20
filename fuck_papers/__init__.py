@@ -125,17 +125,19 @@ def register_commands(app):
         click.echo('Initialized database.')
 
     @app.cli.command()
-    @click.option('--user', default=10, help='Quantity of users, default is 10')
+    @click.option('--user', default=5, help='Quantity of users, default is 10')
     @click.option('--category', default=50, help='Quantity of posts, default is 50')
     @click.option('--paper', default=400, help='Quantity of papers, default is 400')
-    def forge(user, category, paper):
+    @click.option('--username', default='default_user', help='Your username')
+    @click.option('--password', default='123456', help='Your password')
+    def forge(user, category, paper, username, password):
         """Generate fake data."""
 
         db.drop_all()
         db.create_all()
 
         click.echo('Generating %d users' % user)
-        fake_users(user)
+        fake_users(username, password, user)
 
         click.echo('Generating %d categories' % category)
         fake_categories(category)
