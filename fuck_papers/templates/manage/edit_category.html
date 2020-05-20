@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/form.html' import render_form %}
 
-{% block title %}新分类-Fuck Papers{% endblock %}
+{% block title %}编辑-Fuck Papers{% endblock %}
 
 {% block content %}
+    <div class="page-header">
+        <h1>{{ category.name }}</h1>
+    </div>
     {{ render_form(form) }}
 {% endblock %}

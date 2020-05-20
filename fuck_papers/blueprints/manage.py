@@ -1,7 +1,8 @@
-from flask import render_template, flash, redirect, url_for, Blueprint
+from flask import render_template, flash, redirect, url_for, Blueprint, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from sqlalchemy.exc import IntegrityError
 
-from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm
+from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm, NewCategoryForm, EditCategoryForm
 from fuck_papers.models import User, Paper, Category
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
@@ -16,11 +17,11 @@ def new_paper():
         url = form.url.data
         ############################
         flash('正在采集', 'success')
-        return redirect(url_for('paper.index'))
+        return redirect_back()
     return render_template('manage/new_paper.html', form=form)
 
 
-@manage_bp.route('/edit_paper<int:paper_id>', methods=['GET', 'POST'])
+@manage_bp.route('/edit_paper/<int:paper_id>', methods=['GET', 'POST'])
 def edit_paper(paper_id):
     paper = Paper.query.filter_by(user=current_user).filter_by(id=paper_id).first_or_404()
     form = EditPaperForm()
@@ -34,7 +35,7 @@ def edit_paper(paper_id):
         paper.category = Category.query.get(form.category.data)
         db.session.commit()
         flash('修改成功', 'success')
-        return redirect(url_for('paper.show_paper', paper_id=paper.id))
+        return redirect_back()
     form.url.data = paper.url
     form.title.data = paper.title
     form.author.data = paper.author
@@ -54,18 +55,18 @@ def add_comment(paper_id):
         paper.commented = commented
         db.session.commit()
         flash('评注成功', 'success')
-        return redirect(url_for('paper.show_paper', paper_id=paper.id))
+        return redirect_back()
     form.commented.data = paper.commented
     return render_template('manage/edit_comment.html', form=form, paper=paper)
 
 
-@manage_bp.route('/edit_paper/<int:paper_id>', methods=['POST'])
+@manage_bp.route('/delete_paper/<int:paper_id>', methods=['POST'])
 def delete_paper(paper_id):
     paper = Paper.query.filter_by(user=current_user).filter_by(id=paper_id).first_or_404()
     db.session.delete(paper)
     db.session.commit()
     flash('删除成功', 'success')
-    return redirect_back()
+    return redirect(url_for('manage.manage_paper'))
 
 
 @manage_bp.route('/star_paper/<int:paper_id>', methods=['POST'])
@@ -94,24 +95,67 @@ def read_paper(paper_id):
     return redirect_back()
 
 
-@manage_bp.route('/papers')
-def manage_paper():
-    pass
+@manage_bp.route('/papers', defaults={'page': 1})
+@manage_bp.route('/papers/<int:page>')
+def manage_paper(page):
+    per_page = current_app.config['FP_MANAGE_PAPER_PER_PAGE']
+    pagination = Paper.query.filter_by(user=current_user).order_by(
+        Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
+    papers = pagination.items
+    return render_template('manage/manage_paper.html', pagination=pagination, papers=papers, page=page)
 
 
-@manage_bp.route('/new_category')
+@manage_bp.route('/new_category', methods=['GET', 'POST'])
 def new_category():
-    pass
+    form = NewCategoryForm()
+    if form.validate_on_submit():
+        category = Category(
+            name=form.new_category_name.data,
+            user=current_user)
+        db.session.add(category)
+        db.session.commit()
+        flash('创建成功', 'success')
+        return redirect_back()
+    return render_template('manage/new_category.html', form=form)
 
 
-@manage_bp.route('/edit_category')
-def edit_category():
-    pass
+@manage_bp.route('/edit_category/<int:category_id>', methods=['GET', 'POST'])
+def edit_category(category_id):
+    own_category = Category.query.filter_by(user=current_user)
+    target_category = own_category.filter_by(id=category_id).first_or_404()
+    default_category = own_category.first()
+    if default_category.id == target_category.id:
+        flash('无法编辑默认分类', 'warning')
+        return redirect(url_for('paper.index'))
+    form = EditCategoryForm()
+    if form.validate_on_submit():
+        target_category.name = form.new_category_name.data
+        db.session.commit()
+        flash('修改成功', 'success')
+        return redirect(url_for('manage.manage_category'))
+    form.new_category_name.data = target_category.name
+    return render_template('manage/edit_category.html', form=form, category=target_category)
 
 
-@manage_bp.route('/categories')
-def manage_category():
-    pass
+@manage_bp.route('/categories', defaults={'page': 1})
+@manage_bp.route('/categories/<int:page>')
+def manage_category(page):
+    default_category = Category.query.filter_by(user=current_user).first()
+    per_page = current_app.config['FP_MANAGE_CATEGORY_PER_PAGE']
+    pagination = Category.query.filter_by(user=current_user).paginate(page, per_page=per_page)
+    categories = pagination.items
+    return render_template('manage/manage_category.html', pagination=pagination, categories=categories,
+                           page=page, default_category=default_category)
 
 
-
+@manage_bp.route('/delete_category/<int:category_id>', methods=['POST'])
+def delete_category(category_id):
+    own_category = Category.query.filter_by(user=current_user)
+    target_category = own_category.filter_by(id=category_id).first_or_404()
+    default_category = own_category.first()
+    if default_category.id == target_category.id:
+        flash('无法删除默认分类', 'warning')
+        return redirect(url_for('paper.index'))
+    target_category.delete()
+    flash('删除成功', 'success')
+    return redirect(url_for('manage.manage_category'))

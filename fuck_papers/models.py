@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 from fuck_papers.extensions import db
 
@@ -31,7 +31,7 @@ class Category(db.Model):
     user = db.relationship('User', back_populates='categories')
 
     def delete(self):
-        default_category = Category.query.get(1)
+        default_category = Category.query.filter_by(user=current_user).first()
         papers = self.papers[:]
         for paper in papers:
             paper.category = default_category

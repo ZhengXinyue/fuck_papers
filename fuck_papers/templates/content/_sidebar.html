@@ -2,25 +2,25 @@
     <div class="card-header">管理</div>
     <ul class="list-group list-group flush">
         <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('manage.new_paper') }}" target="_blank">新建论文</a>
-            <a href="{{ url_for('manage.new_paper') }}" target="_blank"><span class="badge badge-primary badge-pill">+</span></a>
+            <a href="{{ url_for('manage.new_paper', next=request.full_path) }}">新建论文</a>
+            <a href="{{ url_for('manage.new_paper', next=request.full_path) }}"><span class="badge badge-primary badge-pill">+</span></a>
         </li>
         <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('manage.manage_paper') }}" target="_blank">管理论文</a>
+            <a href="{{ url_for('manage.manage_paper') }}">管理论文</a>
         </li>
         <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('manage.new_category') }}" target="_blank">新建分类</a>
-            <a href="{{ url_for('manage.new_category') }}" target="_blank"><span class="badge badge-primary badge-pill">+</span></a>
+            <a href="{{ url_for('manage.new_category', next=request.full_path) }}">新建分类</a>
+            <a href="{{ url_for('manage.new_category', next=request.full_path) }}"><span class="badge badge-primary badge-pill">+</span></a>
         </li>
         <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('manage.manage_category') }}" target="_blank">管理分类</a>
+            <a href="{{ url_for('manage.manage_category') }}">管理分类</a>
         </li>
     </ul>
 </div>
 
 
 <div class="card mb-3">
-    <div class="card-header">Categories</div>
+    <div class="card-header">分类</div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             <a href="{{ url_for('paper.recently') }}">最近阅读</a>

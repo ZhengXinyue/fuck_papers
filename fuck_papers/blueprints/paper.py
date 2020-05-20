@@ -21,9 +21,7 @@ def by_category(category_id, page):
     pagination = Paper.query.filter_by(category=category).order_by(
         Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
-    total = pagination.total
-    return render_template('content/index.html', pagination=pagination, papers=papers, total=total,
-                           category_name=category.name)
+    return render_template('content/index.html', pagination=pagination, papers=papers, category_name=category.name)
 
 
 @paper_bp.route('/', defaults={'page': 1})
@@ -35,8 +33,7 @@ def index(page):
         Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
     total = pagination.total
-    return render_template('content/index.html', pagination=pagination, papers=papers, total=total,
-                           category_name='所有')
+    return render_template('content/index.html', pagination=pagination, papers=papers, category_name='所有')
 
 
 @paper_bp.route('/recently', defaults={'page': 1})
@@ -46,9 +43,7 @@ def recently(page):
     pagination = Paper.query.filter_by(user=current_user).order_by(
         Paper.last_read_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
-    total = pagination.total
-    return render_template('content/index.html', pagination=pagination, papers=papers, total=total,
-                           category_name='最近阅读')
+    return render_template('content/index.html', pagination=pagination, papers=papers, category_name='最近阅读')
 
 
 @paper_bp.route('/stared', defaults={'page': 1})
@@ -58,9 +53,7 @@ def stared(page):
     pagination = Paper.query.filter_by(user=current_user).filter_by(stared=True).order_by(
         Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
-    total = pagination.total
-    return render_template('content/index.html', pagination=pagination, papers=papers, total=total,
-                           category_name='收藏')
+    return render_template('content/index.html', pagination=pagination, papers=papers, category_name='收藏')
 
 
 @paper_bp.route('/readed', defaults={'page': 1})
@@ -70,21 +63,18 @@ def readed(page):
     pagination = Paper.query.filter_by(user=current_user).filter_by(readed=True).order_by(
         Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
-    total = pagination.total
-    return render_template('content/index.html', pagination=pagination, papers=papers, total=total,
-                           category_name='已读')
+    return render_template('content/index.html', pagination=pagination, papers=papers, category_name='已读')
 
 
 @paper_bp.route('/commented', defaults={'page': 1})
 @paper_bp.route('/commented/<int:page>')
 def commented(page):
     per_page = current_app.config['FP_PAPER_PER_PAGE']
-    pagination = Paper.query.filter_by(user=current_user).filter(Paper.commented.isnot(None)).order_by(
+    pagination = Paper.query.filter_by(user=current_user).filter(Paper.commented != '').order_by(
         Paper.add_timestamp.desc()).paginate(page, per_page=per_page)
     papers = pagination.items
     total = pagination.total
-    return render_template('content/index.html', pagination=pagination, papers=papers, total=total,
-                           category_name='已评论')
+    return render_template('content/index.html', pagination=pagination, papers=papers, category_name='已评论')
 
 
 @paper_bp.route('/paper/<int:paper_id>', methods=['GET', 'POST'])

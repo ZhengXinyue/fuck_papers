@@ -1,10 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
-</body>
-</html>
+{% block title %}管理分类-Fuck Papers{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>分类
+            <small class="text-muted">{{ pagination.total }}</small>
+            <span class="float-right"><a class="btn btn-primary btn-sm"
+                                         href="{{ url_for('manage.new_category', next=request.full_path) }}">新建分类</a></span>
+        </h1>
+    </div>
+    {% if categories %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>类别</th>
+                <th>论文数</th>
+                <th>动作</th>
+            </tr>
+            </thead>
+            {% for category in categories %}
+            <tr>
+                <td>{{ loop.index + ((page - 1) * config.FP_MANAGE_CATEGORY_PER_PAGE) }}</td>
+                <td><a href="{{ url_for('paper.by_category', category_id=category.id) }}">{{ category.name }}</a></td>
+                <td>{{ category.papers|length }}</td>
+                <td>
+                    {% if default_category.id != category.id %}
+                        <a class="btn btn-primary btn-sm" href="{{ url_for('manage.edit_category', category_id=category.id, next=request.full_path) }}">编辑</a>
+                        <form class="inline" method="post" action="{{ url_for('manage.delete_category', category_id=category.id, next=request.full_path) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('是否确认?');">删除</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <p class="text-muted">注意：删除某分类默认将其中的文章转移到“未分类”中。</p>
+        <div class="page-footer">{{ render_pagination(pagination) }}</div>
+    {% else %}
+        <div class="tip"><h5>你还没有任何分类</h5></div>
+    {% endif %}
+{% endblock %}

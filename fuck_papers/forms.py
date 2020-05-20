@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from flask_login import current_user
 from wtforms import StringField, SubmitField, SelectField, TextAreaField, ValidationError, HiddenField, \
     BooleanField, PasswordField
-from wtforms.validators import DataRequired, Email, Length, Optional, URL, EqualTo
+from wtforms.validators import DataRequired, Email, Length, Optional, URL, EqualTo, NoneOf
 
 from fuck_papers.models import Category
 
@@ -44,6 +44,22 @@ class EditPaperForm(FlaskForm):
                                  for category in Category.query.filter_by(user=current_user).all()]
 
 
+class EditCategoryForm(FlaskForm):
+    new_category_name = StringField('分类',
+                                    [DataRequired(),
+                                     Length(1, 20, message='请将分类名限制在1-20字内'),
+                                     NoneOf('未分类', message='无法创建该分类')])
+    submit = SubmitField('提交')
+
+
 class UrlForm(FlaskForm):
-    url = StringField('论文Url', validators=[DataRequired()])
+    url = StringField('论文Url', validators=[DataRequired(), URL(message='请输入正确的url')])
     submit = SubmitField('开始解析')
+
+
+class NewCategoryForm(FlaskForm):
+    new_category_name = StringField('分类',
+                                    [DataRequired(),
+                                     Length(1, 20, message='请将分类名限制在1-20字内'),
+                                     NoneOf('未分类', message='无法创建该分类')])
+    submit = SubmitField('提交')

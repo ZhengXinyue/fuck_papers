@@ -33,6 +33,7 @@ class BaseConfig(object):
 
     FP_PAPER_PER_PAGE = 10
     FP_MANAGE_PAPER_PER_PAGE = 15
+    FP_MANAGE_CATEGORY_PER_PAGE = 15
     # ('theme name', 'display name')
     FP_THEMES = {'perfect_blue': 'Perfect Blue', 'black_swan': 'Black Swan'}
 

@@ -6,7 +6,8 @@ from flask_wtf.csrf import CSRFError
 from flask_sqlalchemy import get_debug_queries
 from flask_login import current_user, login_required
 
-from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, assets, migrate, cache, assets
+from fuck_papers.extensions import bootstrap, db, login_manager, csrf, ckeditor, moment, toolbar, assets, migrate, \
+    cache, assets
 from fuck_papers.settings import config
 from fuck_papers.blueprints.auth import auth_bp
 from fuck_papers.blueprints.paper import paper_bp
@@ -82,7 +83,7 @@ def register_template_context(app):
             all_papers = Paper.query.filter_by(user=current_user).all()
             stared_papers = Paper.query.filter_by(user=current_user).filter_by(stared=True).all()
             readed_papers = Paper.query.filter_by(user=current_user).filter_by(readed=True).all()
-            commented_papers = Paper.query.filter_by(user=current_user).filter(Paper.commented.isnot(None)).all()
+            commented_papers = Paper.query.filter_by(user=current_user).filter(Paper.commented != '').all()
         else:
             categories = None
             all_papers = None
