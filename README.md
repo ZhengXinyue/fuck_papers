@@ -7,6 +7,9 @@
 Demo:   
 Not yet     
 
+example:
+![screenshot](https://github.com/ZhengXinyue/fuck_papers/blob/master/example.png) 
+
 clone:
 ```
 https://github.com/ZhengXinyue/fuck_papers
