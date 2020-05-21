@@ -22,6 +22,14 @@ class BaseConfig(object):
 
     FP_SLOW_QUERY_THRESHOLD = 1
 
+    # MAIL_SERVER = os.getenv('MAIL_SERVER')
+    # MAIL_PORT = 465
+    # MAIL_USE_SSL = True
+    # MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    # MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    # MAIL_DEFAULT_SENDER = ('Zheng', MAIL_USERNAME)
+    #
+    # FP_EMAIL = os.getenv('F-Papers_EMAIL')
     FP_PAPER_PER_PAGE = 10
     FP_MANAGE_PAPER_PER_PAGE = 15
     FP_MANAGE_CATEGORY_PER_PAGE = 15

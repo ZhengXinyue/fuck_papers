@@ -1,7 +1,9 @@
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 
 import click
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_wtf.csrf import CSRFError
 from flask_sqlalchemy import get_debug_queries
 from flask_login import current_user, login_required
@@ -12,8 +14,9 @@ from fuck_papers.blueprints.auth import auth_bp
 from fuck_papers.blueprints.paper import paper_bp
 from fuck_papers.blueprints.manage import manage_bp
 from fuck_papers.fakes import fake_users, fake_categories, fake_papers
-
 from fuck_papers.models import User, Category, Paper
+
+basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
 def create_app(config_name=None):
@@ -29,6 +32,7 @@ def create_app(config_name=None):
     register_shell_context(app)
     register_template_context(app)
     register_request_handlers(app)
+    register_logging(app)
 
     @app.route('/about')
     @cache.cached(timeout=60 * 60 * 24)
@@ -38,16 +42,45 @@ def create_app(config_name=None):
     return app
 
 
+def register_logging(app):
+    class RequestFormatter(logging.Formatter):
+
+        def format(self, record):
+            record.url = request.url
+            record.remote_addr = request.remote_addr
+            return super(RequestFormatter, self).format(record)
+
+    request_formatter = RequestFormatter(
+        '[%(asctime)s] %(remote_addr)s requested %(url)s\n'
+        '%(levelname)s in %(module)s: %(message)s'
+    )
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    file_handler = RotatingFileHandler(os.path.join(basedir, 'logs/bluelog.log'),
+                                       maxBytes=10 * 1024 * 1024, backupCount=10)
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.INFO)
+
+    # mail_handler = SMTPHandler(
+    #     mailhost=app.config['MAIL_SERVER'],
+    #     fromaddr=app.config['MAIL_USERNAME'],
+    #     toaddrs=['ADMIN_EMAIL'],
+    #     subject='F-Papers Application Error',
+    #     credentials=(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD']))
+    # mail_handler.setLevel(logging.ERROR)
+    # mail_handler.setFormatter(request_formatter)
+
+
 def register_extensions(app):
     bootstrap.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
     moment.init_app(app)
-    # toolbar.init_app(app)
-    # migrate.init_app(app, db)
+    migrate.init_app(app, db)
     cache.init_app(app)
     mail.init_app(app)
+    # toolbar.init_app(app)
     # assets.init_app(app)
 
 
