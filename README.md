@@ -22,11 +22,7 @@ $ python -m venv env  # use `virtualenv env` for Python2, use `python3 ...` for 
 $ source env/bin/activate  # use `env\Scripts\activate` on Windows
 $ pip install -r requirements.txt
 ```
-or with Pipenv:
-```
-$ pipenv install --dev
-$ pipenv shell
-```
+
 generate fake data then run:
 ```
 $ flask forge
