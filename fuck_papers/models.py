@@ -8,8 +8,8 @@ from fuck_papers.extensions import db
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(6, 20), unique=True)
-    password_hash = db.Column(db.String(6, 128))
+    username = db.Column(db.String(20), unique=True)
+    password_hash = db.Column(db.String(128))
 
     papers = db.relationship('Paper', back_populates='user')
     categories = db.relationship('Category', back_populates='user')
