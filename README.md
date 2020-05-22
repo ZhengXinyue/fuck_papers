@@ -5,7 +5,7 @@
 提供多种文献操作（分类，收藏，已评注，已读，最近阅读）     
     
 Demo:   
-Not yet     
+http://121.89.174.101       
 
 example:
 ![screenshot](https://github.com/ZhengXinyue/fuck_papers/blob/master/example.png) 
