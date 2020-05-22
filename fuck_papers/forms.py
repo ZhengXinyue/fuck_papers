@@ -26,12 +26,12 @@ class CommentForm(FlaskForm):
 
 
 class EditPaperForm(FlaskForm):
-    url = StringField('url', [Length(0, 200, message='"url"过长')])
-    title = StringField('标题', [Length(0, 200, message='"标题"过长')])
-    author = StringField('作者', [Length(0, 300, message='"作者"过长')])
-    abstract = StringField('摘要', [Length(0, 2000, message='"摘要"过长')])
-    subjects = StringField('领域', [Length(0, 200, message='"领域"过长')])
-    submit_time = StringField('提交时间', [Length(0, 20, message='"提交时间"过长')])
+    url = StringField('url', [Length(0, 200, message='"url"应在0-200字之间')])
+    title = StringField('标题', [Length(0, 200, message='"标题"应在0-200字之间')])
+    author = StringField('作者', [Length(0, 200, message='"作者"应在0-200字之间')])
+    abstract = StringField('摘要', [Length(0, 2000, message='"摘要"应在0-200字之间')])
+    subjects = StringField('领域', [Length(0, 200, message='"领域"应在0-200字之间')])
+    submit_time = StringField('提交时间', [Length(0, 200, message='"提交时间"应在0-200字之间')])
     category = SelectField('分类', coerce=int)
 
     submit = SubmitField('提交')

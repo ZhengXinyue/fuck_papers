@@ -18,7 +18,7 @@ moment = Moment()
 toolbar = DebugToolbarExtension()
 migrate = Migrate()
 cache = Cache()
-assets = Environment()
+# assets = Environment()
 mail = Mail()      # TODO: 实现邮箱注册登录
 
 
@@ -54,5 +54,5 @@ css = Bundle('css/black_swan.min.css',
              'css/style.css',
              filters='cssmin', output='gen/packed.css')
 
-assets.register('js_all', js)
-assets.register('css_all', css)
+# assets.register('js_all', js)
+# assets.register('css_all', css)

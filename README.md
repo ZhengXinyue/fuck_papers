@@ -35,7 +35,7 @@ $ flask run
 
 or:
 ```
-$ flask forge --username your_name --password your_password
+$ flask forge --username your_name --password your_password  (长度在6-20之间)
 用户名: your_name
 密码: your_password
 ```

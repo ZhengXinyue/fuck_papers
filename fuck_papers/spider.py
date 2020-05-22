@@ -49,8 +49,7 @@ class BaseParser(object):
         return d
 
     def parse_url(self, url):
-        paper = BeautifulSoup(requests.get(url, headers=self.headers).text, 'html.parser')
-        return paper
+        raise NotImplementedError
 
     def get_title(self, paper):
         raise NotImplementedError
@@ -106,30 +105,113 @@ class ArxivParser(BaseParser):
                 return True
         return False
 
+    def parse_url(self, url):
+        paper = BeautifulSoup(requests.get(url, headers=self.headers).text, 'html.parser')
+        return paper
+
     def get_title(self, paper):
-        element = paper.find('h1', class_='title mathjax')
-        title = list(element.strings)[-1].strip()
+        try:
+            element = paper.find('h1', class_='title mathjax')
+            title = ''.join(list(element.strings)[1:]).strip()
+        except:
+            title = None
         return title
 
     def get_author(self, paper):
-        element = paper.find('div', class_='authors')
-        authors = ''.join(list(element.strings)[1:]).replace('\n', '')
+        try:
+            element = paper.find('div', class_='authors')
+            authors = ''.join(list(element.strings)[1:]).replace('\n', '')
+        except:
+            authors = None
         return authors
 
     def get_abstract(self, paper):
-        element = paper.find('blockquote', class_='abstract mathjax')
-        abstract = list(element.strings)[-1].strip()
+        try:
+            element = paper.find('blockquote', class_='abstract mathjax')
+            abstract = list(element.strings)[-1].strip()
+        except:
+            abstract = None
         return abstract
 
     def get_subject(self, paper):
-        element = paper.find('span', class_='primary-subject')
-        subject = element.string
+        try:
+            element = paper.find('span', class_='primary-subject')
+            subject = element.string
+        except:
+            subject = None
         return subject
 
     def get_submit_info(self, paper):
-        element = paper.find('div', class_='submission-history')
-        infos = list(element.strings)[5:]
-        submit_info = ''.join(infos).replace('\n', ' ').strip()
+        try:
+            element = paper.find('div', class_='submission-history')
+            infos = list(element.strings)[5:]
+            submit_info = ''.join(infos).replace('\n', ' ').strip()
+        except:
+            submit_info = None
+        return submit_info
+
+    def __repr__(self):
+        return '%s' % self.name
+
+
+@register_url_parser
+class BiorxivParser(BaseParser):
+    name = 'BiorxivParser'
+    patterns = ['https://www.biorxiv.org/content/']
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @classmethod
+    def url_match(cls, url):
+        for pattern in cls.patterns:
+            if url.startswith(pattern):
+                return True
+        return False
+
+    def parse_url(self, url):
+        paper = BeautifulSoup(requests.get(url, headers=self.headers).text, 'html.parser')
+        return paper
+
+    def get_title(self, paper):
+        try:
+            element = paper.find('h1', id='page-title')
+            title = ''.join(list(element.strings)).strip()
+        except AttributeError:
+            title = None
+        return title
+
+    def get_author(self, paper):
+        try:
+            element = paper.find('div', class_='highwire-cite-authors')
+            names = list(element.strings)
+            authors = ''.join([name for name in names if name != 'View ORCID Profile'])
+        except:
+            authors = None
+        return authors
+
+    def get_abstract(self, paper):
+        try:
+            element = paper.find('div', id='abstract-1')
+            abstract = ''.join(list(element.strings)[1:]).strip()
+        except:
+            abstract = None
+        return abstract
+
+    def get_subject(self, paper):
+        try:
+            element = paper.find('span', class_='highwire-article-collection-term')
+            subject = ''.join(list(element.stripped_strings))
+        except:
+            subject = None
+        return subject
+
+    def get_submit_info(self, paper):
+        try:
+            element = paper.find('div', class_='panel-pane pane-custom pane-1')
+            submit_info = ''.join(list(element.stripped_strings)).replace('\xa0', ' ')
+        except:
+            submit_info = None
         return submit_info
 
     def __repr__(self):
@@ -150,6 +232,11 @@ class IEEEParser(BaseParser):
             if url.startswith(pattern):
                 return True
         return False
+
+    def parse_url(self, url):
+        # this need to do with js
+        paper = None
+        return paper
 
     def get_title(self, paper):
         pass
@@ -177,5 +264,5 @@ def create_paper(url):
 
 
 if __name__ == '__main__':
-    article = create_paper('http://de.arxiv.org/abs/2005.10791')
+    article = create_paper('https://www.biorxiv.org/content/10.1101/2020.05.21.108381v1')
     print(article)

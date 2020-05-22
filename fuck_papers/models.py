@@ -8,8 +8,8 @@ from fuck_papers.extensions import db
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True)
-    password_hash = db.Column(db.String(128))
+    username = db.Column(db.String(6, 20), unique=True)
+    password_hash = db.Column(db.String(6, 128))
 
     papers = db.relationship('Paper', back_populates='user')
     categories = db.relationship('Category', back_populates='user')
@@ -43,10 +43,10 @@ class Paper(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(200))
     title = db.Column(db.String(200))
-    author = db.Column(db.String(300))
+    author = db.Column(db.String(200))
     abstract = db.Column(db.Text)
     subjects = db.Column(db.String(200))
-    submit_time = db.Column(db.String(40))
+    submit_time = db.Column(db.String(200))
 
     add_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     last_read_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)

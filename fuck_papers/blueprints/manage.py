@@ -19,7 +19,7 @@ def new_paper():
         category = Category.query.get(form.category.data)
         paper_info = create_paper(url)
         if not paper_info:
-            flash('解析失败，或许你应该输入正确的url')
+            flash('解析失败，或许你应该输入正确的论文url')
         else:
             paper = Paper(
                 url=paper_info['url'],
@@ -83,7 +83,7 @@ def delete_paper(paper_id):
     db.session.delete(paper)
     db.session.commit()
     flash('删除成功', 'success')
-    return redirect(url_for('manage.manage_paper'))
+    return redirect_back()
 
 
 @manage_bp.route('/star_paper/<int:paper_id>', methods=['POST'])
