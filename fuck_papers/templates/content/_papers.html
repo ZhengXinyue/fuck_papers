@@ -1,7 +1,7 @@
 {% if papers %}
     {% for paper in papers %}
         <h2 class="text-primary"><a href="{{ url_for('paper.show_paper', paper_id=paper.id) }}">{{ paper.title }}</a></h2>
-        <small><p class="text-muted">Submitted on {{ paper.submit_time }}</small>
+        <small><p class="text-muted">提交或发表信息: {{ paper.submit_time }}</small>
 
         <p>{{ paper.abstract|striptags|truncate }}
             <small><a href="{{ url_for('paper.show_paper', paper_id=paper.id) }}">Read More</a></small>

@@ -23,7 +23,6 @@ def by_category(category_id, page):
     return render_template('content/index.html', pagination=pagination, papers=papers, category_name=category.name)
 
 
-@paper_bp.route('/', defaults={'page': 1})
 @paper_bp.route('/index', defaults={'page': 1})
 @paper_bp.route('/index/<int:page>', )
 def index(page):

@@ -5,6 +5,8 @@ from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm, NewCategoryFo
 from fuck_papers.models import Paper, Category
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
+from fuck_papers.spider import create_paper
+
 
 manage_bp = Blueprint('manage', __name__)
 
@@ -14,8 +16,24 @@ def new_paper():
     form = UrlForm()
     if form.validate_on_submit():
         url = form.url.data
-        # TODO: 异步任务框架?
-        flash('正在采集', 'success')
+        category = Category.query.get(form.category.data)
+        paper_info = create_paper(url)
+        if not paper_info:
+            flash('解析失败，或许你应该输入正确的url')
+        else:
+            paper = Paper(
+                url=paper_info['url'],
+                title=paper_info['title'],
+                author=paper_info['author'],
+                abstract=paper_info['abstract'],
+                subjects=paper_info['subjects'],
+                submit_time=paper_info['submit_info'],
+                user=current_user,
+                category=category
+            )
+            db.session.add(paper)
+            db.session.commit()
+            flash('已加入到论文列表中')
         return redirect_back()
     return render_template('manage/new_paper.html', form=form)
 

@@ -34,9 +34,10 @@ def create_app(config_name=None):
     register_request_handlers(app)
     register_logging(app)
 
-    @app.route('/about')
-    @cache.cached(timeout=60 * 60 * 24)
+    @app.route('/')
+    # @cache.cached(timeout=10 * 60)
     def about():
+        cache.clear()
         return render_template('about.html')
 
     return app
