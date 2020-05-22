@@ -18,6 +18,7 @@ def new_paper():
     if form.validate_on_submit():
         url = form.url.data
         category = Category.query.get(form.category.data)
+        # TODO: Celery?
         try:
             paper_info = create_paper(url)
         except NameError:
