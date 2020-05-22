@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, url_for, Blueprint, current_app
 from flask_login import current_user
+import requests
 
 from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm, NewCategoryForm, EditCategoryForm
 from fuck_papers.models import Paper, Category
@@ -17,9 +18,12 @@ def new_paper():
     if form.validate_on_submit():
         url = form.url.data
         category = Category.query.get(form.category.data)
-        paper_info = create_paper(url)
-        if not paper_info:
-            flash('解析失败，或许你应该输入正确的论文ul，或者稍后再试。')
+        try:
+            paper_info = create_paper(url)
+        except NameError:
+            flash('url不匹配，或许你应该输入符合格式的论文url。', 'warning')
+        except requests.exceptions.RequestException:
+            flash('服务器解析失败，或者稍后再试。', 'warning')
         else:
             paper = Paper(
                 url=paper_info['url'],
@@ -33,7 +37,7 @@ def new_paper():
             )
             db.session.add(paper)
             db.session.commit()
-            flash('已加入到论文列表中')
+            flash('已加入到论文列表中', 'info')
         return redirect_back()
     return render_template('manage/new_paper.html', form=form)
 

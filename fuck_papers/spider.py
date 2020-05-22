@@ -258,8 +258,6 @@ def create_paper(url):
     for parser in URL_PARSERS:
         if parser.url_match(url):
             p = parser(url)
-            try:
-                p.start_pip_line()
-                return p.paper_info
-            except:
-                return
+            p.start_pip_line()
+            return p.paper_info
+    raise NameError
