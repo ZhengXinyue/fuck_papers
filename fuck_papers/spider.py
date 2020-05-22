@@ -114,7 +114,7 @@ class ArxivParser(BaseParser):
             element = paper.find('h1', class_='title mathjax')
             title = ''.join(list(element.strings)[1:]).strip()
         except:
-            title = None
+            title = '未获取，你可以手动添加该内容。'
         return title
 
     def get_author(self, paper):
@@ -122,7 +122,7 @@ class ArxivParser(BaseParser):
             element = paper.find('div', class_='authors')
             authors = ''.join(list(element.strings)[1:]).replace('\n', '')
         except:
-            authors = None
+            authors = '未获取，你可以手动添加该内容。'
         return authors
 
     def get_abstract(self, paper):
@@ -130,7 +130,7 @@ class ArxivParser(BaseParser):
             element = paper.find('blockquote', class_='abstract mathjax')
             abstract = list(element.strings)[-1].strip()
         except:
-            abstract = None
+            abstract = '未获取，你可以手动添加该内容。'
         return abstract
 
     def get_subject(self, paper):
@@ -138,7 +138,7 @@ class ArxivParser(BaseParser):
             element = paper.find('span', class_='primary-subject')
             subject = element.string
         except:
-            subject = None
+            subject = '未获取，你可以手动添加该内容。'
         return subject
 
     def get_submit_info(self, paper):
@@ -147,7 +147,7 @@ class ArxivParser(BaseParser):
             infos = list(element.strings)[5:]
             submit_info = ''.join(infos).replace('\n', ' ').strip()
         except:
-            submit_info = None
+            submit_info = '未获取，你可以手动添加该内容。'
         return submit_info
 
     def __repr__(self):
@@ -178,7 +178,7 @@ class BiorxivParser(BaseParser):
             element = paper.find('h1', id='page-title')
             title = ''.join(list(element.strings)).strip()
         except AttributeError:
-            title = None
+            title = '未获取，你可以手动添加该内容。'
         return title
 
     def get_author(self, paper):
@@ -187,7 +187,7 @@ class BiorxivParser(BaseParser):
             names = list(element.strings)
             authors = ''.join([name for name in names if name != 'View ORCID Profile'])
         except:
-            authors = None
+            authors = '未获取，你可以手动添加该内容。'
         return authors
 
     def get_abstract(self, paper):
@@ -195,7 +195,7 @@ class BiorxivParser(BaseParser):
             element = paper.find('div', id='abstract-1')
             abstract = ''.join(list(element.strings)[1:]).strip()
         except:
-            abstract = None
+            abstract = '未获取，你可以手动添加该内容。'
         return abstract
 
     def get_subject(self, paper):
@@ -203,7 +203,7 @@ class BiorxivParser(BaseParser):
             element = paper.find('span', class_='highwire-article-collection-term')
             subject = ''.join(list(element.stripped_strings))
         except:
-            subject = None
+            subject = '未获取，你可以手动添加该内容。'
         return subject
 
     def get_submit_info(self, paper):
@@ -211,7 +211,7 @@ class BiorxivParser(BaseParser):
             element = paper.find('div', class_='panel-pane pane-custom pane-1')
             submit_info = ''.join(list(element.stripped_strings)).replace('\xa0', ' ')
         except:
-            submit_info = None
+            submit_info = '未获取，你可以手动添加该内容。'
         return submit_info
 
     def __repr__(self):
@@ -234,7 +234,7 @@ class IEEEParser(BaseParser):
         return False
 
     def parse_url(self, url):
-        # this need to do with js
+        # this need to deal with js
         paper = None
         return paper
 
@@ -258,11 +258,8 @@ def create_paper(url):
     for parser in URL_PARSERS:
         if parser.url_match(url):
             p = parser(url)
-            p.start_pip_line()
-            return p.paper_info
-    return None
-
-
-if __name__ == '__main__':
-    article = create_paper('https://www.biorxiv.org/content/10.1101/2020.05.21.108381v1')
-    print(article)
+            try:
+                p.start_pip_line()
+                return p.paper_info
+            except:
+                return

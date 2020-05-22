@@ -19,7 +19,7 @@ def new_paper():
         category = Category.query.get(form.category.data)
         paper_info = create_paper(url)
         if not paper_info:
-            flash('解析失败，或许你应该输入正确的论文url')
+            flash('解析失败，或许你应该输入正确的论文ul，或者稍后再试。')
         else:
             paper = Paper(
                 url=paper_info['url'],
