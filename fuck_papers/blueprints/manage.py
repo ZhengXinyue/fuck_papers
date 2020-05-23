@@ -16,8 +16,8 @@ def new_paper():
     form = UrlForm()
     if form.validate_on_submit():
         url = form.url.data
-        category = Category.query.get(form.category.data)
-        create_paper_and_notify(url, category)
+        category_id = form.category.data
+        create_paper_and_notify.delay(url, category_id)
         flash('正在解析，请稍后在通知栏中查看结果', 'info')
         return redirect_back()
     return render_template('manage/new_paper.html', form=form)
