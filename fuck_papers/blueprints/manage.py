@@ -1,12 +1,11 @@
 from flask import render_template, flash, redirect, url_for, Blueprint, current_app
 from flask_login import current_user
-import requests
 
 from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm, NewCategoryForm, EditCategoryForm
 from fuck_papers.models import Paper, Category, Message
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
-from fuck_papers.spider import create_paper
+from fuck_papers.spider import create_paper_and_notify
 
 
 manage_bp = Blueprint('manage', __name__)
@@ -18,27 +17,8 @@ def new_paper():
     if form.validate_on_submit():
         url = form.url.data
         category = Category.query.get(form.category.data)
-        # TODO: Celery?
-        try:
-            paper_info = create_paper(url)
-        except NameError:
-            flash('url不匹配，或许你应该输入符合格式的论文url。', 'warning')
-        except requests.exceptions.RequestException:
-            flash('服务器解析失败，或者稍后再试。', 'warning')
-        else:
-            paper = Paper(
-                url=paper_info['url'],
-                title=paper_info['title'],
-                author=paper_info['author'],
-                abstract=paper_info['abstract'],
-                subjects=paper_info['subjects'],
-                submit_time=paper_info['submit_info'],
-                user=current_user,
-                category=category
-            )
-            db.session.add(paper)
-            db.session.commit()
-            flash('已加入到论文列表中', 'info')
+        create_paper_and_notify(url, category)
+        flash('正在解析，请稍后在通知栏中查看结果', 'info')
         return redirect_back()
     return render_template('manage/new_paper.html', form=form)
 

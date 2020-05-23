@@ -1,7 +1,18 @@
+from __future__ import absolute_import
+from datetime import datetime
+
 from bs4 import BeautifulSoup
 import requests
 from fake_useragent import UserAgent
+from flask_login import current_user
+from celery.utils.log import get_task_logger
 
+from fuck_papers.celery import app
+from fuck_papers.models import Paper, Category, Message
+from fuck_papers.extensions import db
+
+
+logger = get_task_logger(__name__)
 URL_PARSERS = []
 
 
@@ -254,10 +265,45 @@ class IEEEParser(BaseParser):
         pass
 
 
-def create_paper(url):
+@app.task
+def create_paper_and_notify(url, category):
     for parser in URL_PARSERS:
         if parser.url_match(url):
             p = parser(url)
-            p.start_pip_line()
-            return p.paper_info
-    raise NameError
+            try:
+                p.start_pip_line()
+            except requests.exceptions.RequestException:
+                message = Message(
+                    content='无法解析 %s，请检查此url，或稍后再试。' % url,
+                    add_timestamp=datetime.utcnow()
+                )
+                db.session.add(message)
+                db.session.commit()
+            else:
+                paper_info = p.paper_info
+                paper = Paper(
+                    url=paper_info['url'],
+                    title=paper_info['title'],
+                    author=paper_info['author'],
+                    abstract=paper_info['abstract'],
+                    subjects=paper_info['subjects'],
+                    submit_time=paper_info['submit_info'],
+                    user=current_user,
+                    category=category
+                )
+                message = Message(
+                    content='%s 收录成功。' % url,
+                    add_timestamp=datetime.utcnow()
+                )
+                db.session.add(paper)
+                db.session.add(message)
+                db.session.commit()
+            finally:
+                return
+    # url不匹配
+    message = Message(
+        content='您输入的 %s 与标准格式不匹配，请输入格式正确的url。' % url,
+        add_timestamp=datetime.utcnow()
+    )
+    db.session.add(message)
+    db.session.commit()
