@@ -13,8 +13,8 @@ from fuck_papers.settings import config
 from fuck_papers.blueprints.auth import auth_bp
 from fuck_papers.blueprints.paper import paper_bp
 from fuck_papers.blueprints.manage import manage_bp
-from fuck_papers.fakes import fake_users, fake_categories, fake_papers
-from fuck_papers.models import User, Category, Paper
+from fuck_papers.fakes import fake_users, fake_categories, fake_papers, fake_messages
+from fuck_papers.models import User, Category, Paper, Message
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -118,14 +118,16 @@ def register_template_context(app):
             stared_papers = Paper.query.filter_by(user=current_user).filter_by(stared=True).all()
             readed_papers = Paper.query.filter_by(user=current_user).filter_by(readed=True).all()
             commented_papers = Paper.query.filter_by(user=current_user).filter(Paper.commented != '').all()
+            messages = Message.query.filter_by(user=current_user).all()
         else:
             categories = None
             all_papers = None
             stared_papers = None
             readed_papers = None
             commented_papers = None
+            messages = None
         return dict(categories=categories, all_papers=all_papers, stared_papers=stared_papers,
-                    readed_papers=readed_papers, commented_papers=commented_papers)
+                    readed_papers=readed_papers, commented_papers=commented_papers, messages=messages)
 
 
 def register_errors(app):
@@ -162,9 +164,10 @@ def register_commands(app):
     @click.option('--user', default=5, help='Quantity of users, default is 10')
     @click.option('--category', default=50, help='Quantity of posts, default is 50')
     @click.option('--paper', default=400, help='Quantity of papers, default is 400')
+    @click.option('--message', default=50, help='Quantity of messages, default is 50')
     @click.option('--username', default='default_user', help='Your username')
     @click.option('--password', default='123456', help='Your password')
-    def forge(user, category, paper, username, password):
+    def forge(user, category, paper, message, username, password):
         """Generate fake data."""
 
         db.drop_all()
@@ -178,6 +181,9 @@ def register_commands(app):
 
         click.echo('Generating %d papers' % paper)
         fake_papers(paper)
+
+        click.echo('Generating %d messages' % message)
+        fake_messages(message)
 
         click.echo('Done.')
 

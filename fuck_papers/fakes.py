@@ -4,7 +4,7 @@ from faker import Faker
 from sqlalchemy.exc import IntegrityError
 
 from fuck_papers.extensions import db
-from fuck_papers.models import User, Category, Paper
+from fuck_papers.models import User, Category, Paper, Message
 
 
 fake = Faker()
@@ -97,4 +97,16 @@ def fake_papers(count=400):
             category=random.choice(user.categories))
 
         db.session.add(paper)
+    db.session.commit()
+
+
+def fake_messages(count=50):
+    user_count = User.query.count()
+    for i in range(count):
+        message = Message(
+            content=fake.sentence(),
+            user=User.query.get(random.choice(list(range(1, user_count+1)))),
+            add_timestamp=fake.date_time_this_year()
+        )
+        db.session.add(message)
     db.session.commit()

@@ -28,8 +28,9 @@ class BaseConfig(object):
     # MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     # MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     # MAIL_DEFAULT_SENDER = ('Zheng', MAIL_USERNAME)
-    #
     # FP_EMAIL = os.getenv('F-Papers_EMAIL')
+
+    FP_MESSAGE_PER_PAGE = 10
     FP_PAPER_PER_PAGE = 10
     FP_MANAGE_PAPER_PER_PAGE = 15
     FP_MANAGE_CATEGORY_PER_PAGE = 15

@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
 
     papers = db.relationship('Paper', back_populates='user')
     categories = db.relationship('Category', back_populates='user')
+    messages = db.relationship('Message', back_populates='user')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -59,3 +60,13 @@ class Paper(db.Model):
 
     category = db.relationship('Category', back_populates='papers')
     user = db.relationship('User', back_populates='papers')
+
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(200))
+    add_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    user = db.relationship('User', back_populates='messages')

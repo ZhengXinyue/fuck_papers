@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from flask import render_template, flash, Blueprint, current_app, abort, make_response
+from flask import render_template, Blueprint, current_app, abort, make_response
 from flask_login import current_user
 
-from fuck_papers.models import Paper, Category
+from fuck_papers.models import Paper, Category, Message
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
 
@@ -24,7 +24,7 @@ def by_category(category_id, page):
 
 
 @paper_bp.route('/index', defaults={'page': 1})
-@paper_bp.route('/index/<int:page>', )
+@paper_bp.route('/index/<int:page>')
 def index(page):
     per_page = current_app.config['FP_PAPER_PER_PAGE']
     pagination = Paper.query.filter_by(user=current_user).order_by(
@@ -81,17 +81,14 @@ def show_paper(paper_id):
     return render_template('content/paper.html', paper=paper)
 
 
-@paper_bp.route('/star/<int:paper_id>', methods=['POST'])
-def star(paper_id):
-    paper = Paper.query.filter_by(user=current_user).filter_by(id=paper_id).first_or_404()
-    if paper.star is True:
-        paper.star = False
-        flash('取消收藏成功')
-    else:
-        paper.star = True
-        flash('收藏成功')
-    db.session.commit()
-    return redirect_back()
+@paper_bp.route('/messages', defaults={'page': 1})
+@paper_bp.route('/messages/<int:page>')
+def show_messages(page):
+    per_page = current_app.config['FP_MESSAGE_PER_PAGE']
+    pagination = Message.query.filter_by(user=current_user).order_by(
+        Message.add_timestamp.desc()).paginate(page, per_page=per_page)
+    messages = pagination.items
+    return render_template('content/message.html', pagination=pagination, messages=messages)
 
 
 @paper_bp.route('/change_theme<theme_name>')

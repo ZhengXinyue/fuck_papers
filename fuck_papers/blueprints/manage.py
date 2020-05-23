@@ -3,7 +3,7 @@ from flask_login import current_user
 import requests
 
 from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm, NewCategoryForm, EditCategoryForm
-from fuck_papers.models import Paper, Category
+from fuck_papers.models import Paper, Category, Message
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
 from fuck_papers.spider import create_paper
@@ -181,3 +181,12 @@ def delete_category(category_id):
     target_category.delete()
     flash('删除成功', 'success')
     return redirect(url_for('manage.manage_category'))
+
+
+@manage_bp.route('/delete_message/<int:message_id>', methods=['POST'])
+def delete_message(message_id):
+    message = Message.query.filter_by(user=current_user).filter_by(id=message_id).first_or_404()
+    db.session.delete(message)
+    db.session.commit()
+    flash('删除成功', 'success')
+    return redirect_back()
