@@ -1,9 +1,16 @@
 ## 利用flask搭建的一个在线文献管理工具网站——Fuck Papers
 ### （参考李辉的《Flask Web开发实战》）
-用户输入url，网站进行解析收录。
-先尝试支持https://arxiv.org/ ，例如https://arxiv.org/abs/2005.06800     
-提供多种文献操作（分类，收藏，已评注，已读，最近阅读）     
-    
+用户输入url，网站进行解析收录。   
+并提供多种文献操作（分类，收藏，已评注，已读，最近浏览）     
+
+已支持的论文网站:   
+https://arxiv.org/abs/xxxx  
+http://de.arxiv.org/abs/xxxx        
+https://www.biorxiv.org/10.1101/xxx(或许10.1101也可以被替换掉)       
+
+或许未来会支持:    
+https://ieeexplore.ieee.org/document/xxxx   
+
 Demo:   
 http://121.89.174.101       
 

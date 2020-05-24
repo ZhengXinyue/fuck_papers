@@ -10,37 +10,13 @@ from flask_login import current_user, login_required
 
 from fuck_papers.extensions import bootstrap, db, login_manager, csrf, moment, toolbar, migrate, cache, mail
 from fuck_papers.settings import config
-from fuck_papers.blueprints.auth import auth_bp
-from fuck_papers.blueprints.paper import paper_bp
-from fuck_papers.blueprints.manage import manage_bp
 from fuck_papers.fakes import fake_users, fake_categories, fake_papers, fake_messages
 from fuck_papers.models import User, Category, Paper, Message
+from celery import Celery
+from fuck_papers.celeryconfig import *
+
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-
-
-def create_app(config_name=None):
-    if config_name is None:
-        config_name = os.getenv('FLASK_CONFIG', 'development')
-    app = Flask('fuck_papers')
-    app.config.from_object(config[config_name])
-
-    register_extensions(app)
-    register_blueprints(app)
-    register_errors(app)
-    register_commands(app)
-    register_shell_context(app)
-    register_template_context(app)
-    register_request_handlers(app)
-    register_logging(app)
-
-    @app.route('/about')
-    # @cache.cached(timeout=10 * 60)
-    def about():
-        cache.clear()
-        return render_template('about.html')
-
-    return app
 
 
 def register_logging(app):
@@ -70,37 +46,6 @@ def register_logging(app):
     #     credentials=(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD']))
     # mail_handler.setLevel(logging.ERROR)
     # mail_handler.setFormatter(request_formatter)
-
-
-def register_extensions(app):
-    bootstrap.init_app(app)
-    db.init_app(app)
-    login_manager.init_app(app)
-    csrf.init_app(app)
-    moment.init_app(app)
-    migrate.init_app(app, db)
-    cache.init_app(app)
-    mail.init_app(app)
-    # toolbar.init_app(app)
-    # assets.init_app(app)
-
-
-def register_blueprints(app):
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(manage_bp, url_prefix='/manage')
-    app.register_blueprint(paper_bp)
-
-
-@paper_bp.before_request
-@login_required
-def login_protect():
-    pass
-
-
-@manage_bp.before_request
-@login_required
-def login_protect():
-    pass
 
 
 def register_shell_context(app):
@@ -198,3 +143,69 @@ def register_request_handlers(app):
                     % (q.duration, q.context, q.statement)
                 )
         return response
+
+
+def register_celery(app):
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+
+
+celery = Celery(include=['fuck_papers.spider'], broker=BROKER_URL)
+celery.config_from_object('fuck_papers.celeryconfig')
+
+
+config_name = os.getenv('FLASK_CONFIG', 'development')
+flask_app = Flask('fuck_papers')
+flask_app.config.from_object(config[config_name])
+
+register_celery(flask_app)
+db.init_app(flask_app)
+bootstrap.init_app(flask_app)
+login_manager.init_app(flask_app)
+csrf.init_app(flask_app)
+moment.init_app(flask_app)
+migrate.init_app(flask_app, db)
+cache.init_app(flask_app)
+mail.init_app(flask_app)
+# toolbar.init_app(flask_app)
+# assets.init_app(flask_app)
+
+register_errors(flask_app)
+register_commands(flask_app)
+register_shell_context(flask_app)
+register_template_context(flask_app)
+register_request_handlers(flask_app)
+register_logging(flask_app)
+
+
+@flask_app.route('/about')
+# @cache.cached(timeout=10 * 60)
+def about():
+    cache.clear()
+    return render_template('about.html')
+
+
+from fuck_papers.blueprints.auth import auth_bp
+from fuck_papers.blueprints.paper import paper_bp
+from fuck_papers.blueprints.manage import manage_bp
+
+
+flask_app.register_blueprint(auth_bp, url_prefix='/auth')
+flask_app.register_blueprint(manage_bp, url_prefix='/manage')
+flask_app.register_blueprint(paper_bp)
+
+
+@paper_bp.before_request
+@login_required
+def login_protect():
+    pass
+
+
+@manage_bp.before_request
+@login_required
+def login_protect():
+    pass

@@ -7,39 +7,6 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_mail import Mail
-from celery import Celery
-import flask
-
-
-class FlaskCelery(Celery):
-
-    def __init__(self, *args, **kwargs):
-
-        super(FlaskCelery, self).__init__(*args, **kwargs)
-        self.patch_task()
-
-        if 'app' in kwargs:
-            self.init_app(kwargs['app'])
-
-    def patch_task(self):
-        TaskBase = self.Task
-        _celery = self
-
-        class ContextTask(TaskBase):
-            abstract = True
-
-            def __call__(self, *args, **kwargs):
-                if flask.has_app_context():
-                    return TaskBase.__call__(self, *args, **kwargs)
-                else:
-                    with _celery.app.app_context():
-                        return TaskBase.__call__(self, *args, **kwargs)
-
-        self.Task = ContextTask
-
-    def init_app(self, app):
-        self.app = app
-        self.config_from_object('fuck_papers.celeryconfig')
 
 
 bootstrap = Bootstrap()
@@ -51,7 +18,6 @@ toolbar = DebugToolbarExtension()
 migrate = Migrate()
 cache = Cache()
 mail = Mail()      # TODO: 实现邮箱注册登录
-celery = FlaskCelery(include=['fuck_papers.spider'])
 
 
 @login_manager.user_loader

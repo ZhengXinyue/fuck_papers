@@ -3,11 +3,11 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 import requests
 from fake_useragent import UserAgent
-from flask_login import current_user
 from celery.utils.log import get_task_logger
 
-from fuck_papers.models import Paper, Category, Message
-from fuck_papers.extensions import db, celery
+from fuck_papers.models import Paper, Category, Message, User
+from fuck_papers.extensions import db
+from fuck_papers import celery, flask_app
 
 
 logger = get_task_logger(__name__)
@@ -44,19 +44,6 @@ class BaseParser(object):
         self._subject = self.get_subject(paper)
         self._submit_info = self.get_submit_info(paper)
 
-    @property
-    def paper_info(self):
-        d = dict()
-
-        d['url'] = self._url
-        d['title'] = self._title
-        d['author'] = self._author
-        d['abstract'] = self._abstract
-        d['subjects'] = self._subject
-        d['submit_info'] = self._submit_info
-
-        return d
-
     def parse_url(self, url):
         raise NotImplementedError
 
@@ -74,6 +61,10 @@ class BaseParser(object):
 
     def get_submit_info(self, paper):
         raise NotImplementedError
+
+    @property
+    def url(self):
+        return self._url
 
     @property
     def title(self):
@@ -186,7 +177,7 @@ class BiorxivParser(BaseParser):
         try:
             element = paper.find('h1', id='page-title')
             title = ''.join(list(element.strings)).strip()
-        except AttributeError:
+        except:
             title = '未获取，你可以手动添加该内容。'
         return title
 
@@ -264,49 +255,53 @@ class IEEEParser(BaseParser):
 
 
 @celery.task
-def create_paper_and_notify(url, category_id):
-    category = Category.query.filter_by(id=category_id)
-    for parser in URL_PARSERS:
-        if parser.url_match(url):
-            p = parser(url)
-            try:
-                p.start_pip_line()
-            except requests.exceptions.RequestException:
-                message = Message(
-                    content='无法解析 %s，请检查此url，或稍后再试。' % url,
-                    add_timestamp=datetime.utcnow(),
-                    user=current_user
-                )
-                db.session.add(message)
-                db.session.commit()
-            else:
-                paper_info = p.paper_info
-                paper = Paper(
-                    url=paper_info['url'],
-                    title=paper_info['title'],
-                    author=paper_info['author'],
-                    abstract=paper_info['abstract'],
-                    subjects=paper_info['subjects'],
-                    submit_time=paper_info['submit_info'],
-                    user=current_user,
-                    category=category
-                )
-                message = Message(
-                    content='%s 收录成功。' % url,
-                    add_timestamp=datetime.utcnow(),
-                    user=current_user
-                )
-                db.session.add(paper)
-                db.session.add(message)
-                db.session.commit()
-            finally:
-                return
-    # url不匹配
-    message = Message(
-        content='您输入的 %s 与标准格式不匹配，请输入格式正确的url。' % url,
-        add_timestamp=datetime.utcnow(),
-        user=current_user
-    )
-    db.session.add(message)
-    db.session.commit()
-
+def create_paper_and_notify(url, category_id, current_user_id):
+    with flask_app.app_context():
+        available_parsers = [parser for parser in URL_PARSERS if parser.url_match(url)]
+        user = User.query.get(current_user_id)
+        if not user:
+            return
+        category = Category.query.filter_by(user=user).filter_by(id=category_id).first()
+        if not category:
+            return
+        if len(available_parsers) > 0:
+            for parser in available_parsers:
+                if parser.url_match(url):
+                    p = parser(url)
+                    try:
+                        p.start_pip_line()
+                    except requests.exceptions.RequestException:
+                        message = Message(
+                            content='无法解析 %s，请检查此url，或稍后再试。' % url,
+                            add_timestamp=datetime.utcnow(),
+                            user=user
+                        )
+                        db.session.add(message)
+                        db.session.commit()
+                    else:
+                        paper = Paper(
+                            url=p.url,
+                            title=p.title,
+                            author=p.author,
+                            abstract=p.abstract,
+                            subjects=p.subject,
+                            submit_time=p.submit_info,
+                            user=user,
+                            category=category
+                        )
+                        message = Message(
+                            content='论文 %s(%s) 收录完成。' % (p.url, p.title),
+                            add_timestamp=datetime.utcnow(),
+                            user=user
+                        )
+                        db.session.add(paper)
+                        db.session.add(message)
+                        db.session.commit()
+        else:
+            message = Message(
+                content='您输入的 %s 与标准格式不匹配，请输入格式正确的url。' % url,
+                add_timestamp=datetime.utcnow(),
+                user=user
+            )
+            db.session.add(message)
+            db.session.commit()
