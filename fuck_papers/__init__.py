@@ -194,11 +194,7 @@ from fuck_papers.blueprints.paper import paper_bp
 from fuck_papers.blueprints.manage import manage_bp
 
 
-flask_app.register_blueprint(auth_bp, url_prefix='/auth')
-flask_app.register_blueprint(manage_bp, url_prefix='/manage')
-flask_app.register_blueprint(paper_bp)
-
-
+# 先视图保护，再注册。
 @paper_bp.before_request
 @login_required
 def login_protect():
@@ -209,3 +205,10 @@ def login_protect():
 @login_required
 def login_protect():
     pass
+
+
+flask_app.register_blueprint(auth_bp, url_prefix='/auth')
+flask_app.register_blueprint(manage_bp, url_prefix='/manage')
+flask_app.register_blueprint(paper_bp)
+
+
