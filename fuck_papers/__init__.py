@@ -27,16 +27,17 @@ def register_logging(app):
             record.remote_addr = request.remote_addr
             return super(RequestFormatter, self).format(record)
 
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    file_handler = RotatingFileHandler(os.path.join(basedir, 'logs/fuck_papers.logs'),
+                                       maxBytes=10 * 1024 * 1024, backupCount=10)
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.INFO)
+
     request_formatter = RequestFormatter(
         '[%(asctime)s] %(remote_addr)s requested %(url)s\n'
         '%(levelname)s in %(module)s: %(message)s'
     )
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    file_handler = RotatingFileHandler(os.path.join(basedir, 'logs/bluelog.log'),
-                                       maxBytes=10 * 1024 * 1024, backupCount=10)
-    file_handler.setFormatter(formatter)
-    file_handler.setLevel(logging.INFO)
 
     # mail_handler = SMTPHandler(
     #     mailhost=app.config['MAIL_SERVER'],
@@ -156,7 +157,6 @@ def register_celery(app):
 
 celery = Celery(include=['fuck_papers.spider'], broker=BROKER_URL)
 celery.config_from_object('fuck_papers.celeryconfig')
-
 
 config_name = os.getenv('FLASK_CONFIG', 'development')
 flask_app = Flask('fuck_papers')
