@@ -255,7 +255,7 @@ class IEEEParser(BaseParser):
 
 
 @celery.task
-def create_paper_and_notify(url, category_id, current_user_id):
+def create_and_notify(url, category_id, current_user_id):
     with flask_app.app_context():
         available_parsers = [parser for parser in URL_PARSERS if parser.url_match(url)]
         user = User.query.get(current_user_id)

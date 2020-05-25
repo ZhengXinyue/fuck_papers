@@ -13,7 +13,7 @@ from fuck_papers.settings import config
 from fuck_papers.fakes import fake_users, fake_categories, fake_papers, fake_messages
 from fuck_papers.models import User, Category, Paper, Message
 from celery import Celery
-from fuck_papers.celeryconfig import *
+from fuck_papers.celeryconfig import BROKER_URL
 
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -210,5 +210,3 @@ def login_protect():
 flask_app.register_blueprint(auth_bp, url_prefix='/auth')
 flask_app.register_blueprint(manage_bp, url_prefix='/manage')
 flask_app.register_blueprint(paper_bp)
-
-

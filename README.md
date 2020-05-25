@@ -7,7 +7,7 @@ websites supported now:
 
 https://arxiv.org/abs/xxxx  
 http://de.arxiv.org/abs/xxxx        
-https://www.biorxiv.org/10.1101/xxx(或许10.1101也可以被替换掉)       
+https://www.biorxiv.org/10.1101/xxx (maybe 10.1101 can alse be replaced.)       
 
 may be supported in the future:   
  

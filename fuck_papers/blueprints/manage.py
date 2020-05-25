@@ -5,7 +5,7 @@ from fuck_papers.forms import CommentForm, EditPaperForm, UrlForm, NewCategoryFo
 from fuck_papers.models import Paper, Category, Message
 from fuck_papers.utils import redirect_back
 from fuck_papers.extensions import db
-from fuck_papers.spider import create_paper_and_notify
+from fuck_papers.spider import create_and_notify
 
 
 manage_bp = Blueprint('manage', __name__)
@@ -17,7 +17,7 @@ def new_paper():
     if form.validate_on_submit():
         url = form.url.data
         category_id = form.category.data
-        create_paper_and_notify.delay(url, category_id, current_user.id)
+        create_and_notify.delay(url, category_id, current_user.id)
         flash('正在解析，请稍后在通知栏中查看结果', 'info')
         return redirect_back()
     return render_template('manage/new_paper.html', form=form)
