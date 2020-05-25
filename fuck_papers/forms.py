@@ -64,6 +64,6 @@ class UrlForm(FlaskForm):
 class NewCategoryForm(FlaskForm):
     new_category_name = StringField('分类',
                                     [DataRequired(),
-                                     Length(1, 20, message='请将分类名限制在1-20字内'),
+                                     Length(1, 50, message='请将分类名限制在1-20字内'),
                                      NoneOf('未分类', message='无法创建该分类')])
     submit = SubmitField('提交')
