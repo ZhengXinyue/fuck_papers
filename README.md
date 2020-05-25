@@ -14,7 +14,7 @@ may be supported in the future:
 https://ieeexplore.ieee.org/document/xxxx   
 
 Demo:   
-http://121.89.174.101       
+http://121.89.174.101/about       
 
 example:
 ![screenshot](https://github.com/ZhengXinyue/fuck_papers/blob/master/example.png) 
