@@ -14,7 +14,7 @@ may be supported in the future:
 https://ieeexplore.ieee.org/document/xxxx   
 
 Demo:   
-http://121.89.174.101       
+http://www.f-papers.online/about       
 
 example:
 ![screenshot](https://github.com/ZhengXinyue/fuck_papers/blob/master/example.png) 
@@ -48,7 +48,7 @@ $ flask forge --username your_name --password your_password  (length between 6 a
 ```
 
 
-then you need to a redis server which runs on port 6379(Do it yourself)     
+then you need a redis server which runs on port 6379(Do it yourself)     
 
 start another terminal:
 ```
