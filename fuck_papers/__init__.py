@@ -182,7 +182,7 @@ register_request_handlers(flask_app)
 register_logging(flask_app)
 
 
-@flask_app.route('/about')
+@flask_app.route('/')
 # @cache.cached(timeout=10 * 60)
 def about():
     cache.clear()

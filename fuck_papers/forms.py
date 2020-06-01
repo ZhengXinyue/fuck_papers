@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from wtforms import StringField, SubmitField, SelectField, BooleanField, PasswordField
-from wtforms.validators import DataRequired, Length, URL, NoneOf
+from wtforms import ValidationError
+from wtforms.validators import DataRequired, Length, URL, NoneOf, EqualTo
 
-from fuck_papers.models import Category
+from fuck_papers.models import Category, User
 
 
 class LoginForm(FlaskForm):
@@ -15,9 +16,14 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField('用户名', validators=[DataRequired(), Length(6, 20, message='用户名长度必须在6-20之间')])
-    password = PasswordField('密码', validators=[DataRequired(), Length(6, 128, message='密码长度必须在6-128之间')])
+    password = PasswordField('密码', validators=[
+        DataRequired(), Length(6, 128, message='密码长度必须在6-128之间'), EqualTo('confirm_password', message='密码不一致')])
     confirm_password = PasswordField('确认密码', validators=[DataRequired()])
     submit = SubmitField('注册')
+
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError('该用户名已被注册')
 
 
 class CommentForm(FlaskForm):

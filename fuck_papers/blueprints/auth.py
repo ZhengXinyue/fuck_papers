@@ -40,21 +40,13 @@ def register():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        confirm_password = form.confirm_password.data
-
-        user = User.query.filter_by(username=username).first()
-        if not user and password == confirm_password:
-            new_user = User(username=username, password_hash=password)
-            new_user.set_password(password)
-            db.session.add(new_user)
-            db.session.commit()
-            initialize_user(new_user)
-            flash('注册成功', 'info')
-            return redirect(url_for('auth.login'))
-        elif user:
-            flash('该用户名已被注册', 'warning')
-        elif password != confirm_password:
-            flash('密码不一致，请重新输入', 'warning')
+        new_user = User(username=username, password_hash=password)
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        initialize_user(new_user)
+        flash('注册成功', 'info')
+        return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
 
